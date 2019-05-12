@@ -34,7 +34,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('localhost/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('login.eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
@@ -65,7 +65,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-managed');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('localhost/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('login.eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
@@ -78,7 +78,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-alt');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('localhost/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('login.eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-alt', $sess->get('auth_redirect'));
@@ -91,7 +91,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-mail');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('localhost/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('login.eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-mail', $sess->get('auth_redirect'));
@@ -104,7 +104,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-director');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('localhost/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('login.eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-director', $sess->get('auth_redirect'));
@@ -127,6 +127,9 @@ class AuthControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCallbackAuthError()
     {
         (new Helper())->emptyDb();
@@ -134,14 +137,11 @@ class AuthControllerTest extends WebTestCase
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
+        list($token, $keySet) = Helper::generateToken(['read-this']);
+
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
-            new Response(200, [], '{
-                "CharacterID": 123,
-                "CharacterName": "Na",
-                "CharacterOwnerHash": "a",
-                "Scopes": "read-this"
-            }') // for getResourceOwner
+            new Response(200, [], '{"access_token": ' . json_encode($token). '}'), // for getAccessToken
+            new Response(200, [], '{"keys": ' . json_encode($keySet). '}') // for JTW key set
         );
 
         $log = new Logger('ignore');
@@ -168,23 +168,22 @@ class AuthControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCallbackSuccess()
     {
         $h = new Helper();
         $h->emptyDb();
         $h->addRoles([Role::USER]);
 
+        list($token, $keySet) = Helper::generateToken(['read-this', 'and-this']);
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": "t"}'), // for getAccessToken()
-            new Response(200, [], '{
-                "CharacterID": 123,
-                "CharacterName": "Na",
-                "CharacterOwnerHash": "a",
-                "Scopes": "read-this and-this"
-            }') // for getResourceOwner()
+            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
         );
 
         $response = $this->runApp(
@@ -202,21 +201,20 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame(['success' => true, 'message' => 'Login successful.'], $_SESSION['auth_result']);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCallbackAltLoginError()
     {
         (new Helper())->emptyDb();
 
+        list($token, $keySet) = Helper::generateToken(['read-this']);
         $state = AuthController::STATE_PREFIX_ALT . '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
-            new Response(200, [], '{
-                "CharacterID": 123,
-                "CharacterName": "Na",
-                "CharacterOwnerHash": "a",
-                "Scopes": "read-this"
-            }') // for getResourceOwner
+            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
         );
 
         $log = new Logger('ignore');
@@ -243,6 +241,9 @@ class AuthControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCallbackAltLogin()
     {
         $h = new Helper();
@@ -251,17 +252,13 @@ class AuthControllerTest extends WebTestCase
         $h->addCharacterMain('User1', 654, [Role::USER], ['group1']);
         $this->loginUser(654);
 
+        list($token, $keySet) = Helper::generateToken(['read-this']);
         $state = AuthController::STATE_PREFIX_ALT . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": "tk"}'), // for getAccessToken()
-            new Response(200, [], '{
-                "CharacterID": 3,
-                "CharacterName": "N3",
-                "CharacterOwnerHash": "hs",
-                "Scopes": "read-this"
-            }') // for getResourceOwner()
+            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
         );
 
         $response = $this->runApp(
@@ -282,6 +279,9 @@ class AuthControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCallbackMailLoginNotAuthorized()
     {
         $h = new Helper();
@@ -296,17 +296,13 @@ class AuthControllerTest extends WebTestCase
         $h->addCharacterMain('Test User', 123456, [Role::USER]);
         $this->loginUser(123456);
 
+        list($token, $keySet) = Helper::generateToken(['esi-mail.send_mail.v1']);
         $state = AuthController::STATE_PREFIX_MAIL . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": "tk"}'), // for getAccessToken()
-            new Response(200, [], '{
-                "CharacterID": 3,
-                "CharacterName": "N3",
-                "CharacterOwnerHash": "hs",
-                "Scopes": "esi-mail.send_mail.v1"
-            }') // for getResourceOwner()
+            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
         );
 
         $response = $this->runApp(
@@ -324,6 +320,9 @@ class AuthControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCallbackMailLogin()
     {
         $h = new Helper();
@@ -338,17 +337,13 @@ class AuthControllerTest extends WebTestCase
         $h->addCharacterMain('Test User', 123456, [Role::USER, Role::SETTINGS]);
         $this->loginUser(123456);
 
+        list($token, $keySet) = Helper::generateToken(['esi-mail.send_mail.v1']);
         $state = AuthController::STATE_PREFIX_MAIL . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": "tk"}'), // for getAccessToken()
-            new Response(200, [], '{
-                "CharacterID": 3,
-                "CharacterName": "N3",
-                "CharacterOwnerHash": "hs",
-                "Scopes": "esi-mail.send_mail.v1"
-            }') // for getResourceOwner()
+            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
         );
 
         $response = $this->runApp(
@@ -366,20 +361,19 @@ class AuthControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCallbackDirectorLoginWrongScopes()
     {
+        list($token, $keySet) = Helper::generateToken(['esi-characters.read_corporation_roles.v1']);
         $state = AuthController::STATE_PREFIX_DIRECTOR . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": "tk"}'), // for getAccessToken()
+            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
 
-            // for getResourceOwner()
-            new Response(200, [], '{
-                "CharacterID": 3,
-                "CharacterName": "N3",
-                "CharacterOwnerHash": "hs",
-                "Scopes": "esi-characters.read_corporation_roles.v1"
-            }')
+            // for JWT key set
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}')
         );
 
         $response = $this->runApp('GET', '/login-callback?state='.$state, null, null, [
@@ -392,23 +386,26 @@ class AuthControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCallbackDirectorLoginSuccess()
     {
+        list($token, $keySet) = Helper::generateToken(
+            ['esi-characters.read_corporation_roles.v1', 'esi-corporations.track_members.v1'],
+            'hs'
+        );
+
         $h = new Helper();
         $h->emptyDb();
         $state = AuthController::STATE_PREFIX_DIRECTOR . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
         $this->client->setResponse(
             // for getAccessToken()
-            new Response(200, [], '{"access_token": "tk"}'),
+            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'),
 
-            // for getResourceOwner()
-            new Response(200, [], '{
-                "CharacterID": 3,
-                "CharacterName": "N3",
-                "CharacterOwnerHash": "hs",
-                "Scopes": "esi-characters.read_corporation_roles.v1 esi-corporations.track_members.v1"
-            }'),
+            // for JWT key set
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'),
 
             // for getCharactersCharacterId
             new Response(200, [], '{"corporation_id": 123}'),

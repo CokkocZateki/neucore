@@ -2,10 +2,12 @@
 
 namespace Neucore;
 
+use Brave\Sso\Basics\AuthenticationProvider;
 use Neucore\Command\CheckTokens;
 use Neucore\Command\DBVerifySSL;
 use Neucore\Command\DoctrineFixturesLoad;
 use Neucore\Command\MakeAdmin;
+use Neucore\Command\RevokeToken;
 use Neucore\Command\SendAccountDisabledMail;
 use Neucore\Command\UpdateCharacters;
 use Neucore\Command\UpdateMemberTracking;
@@ -335,6 +337,11 @@ class Application
                     'httpClient' => $c->get(ClientInterface::class)
                 ]);
             },
+            AuthenticationProvider::class => function (ContainerInterface $c) {
+                $conf = $c->get('config')['eve'];
+                $urls = $conf['datasource'] === 'singularity' ? $conf['oauth_urls_sisi'] : $conf['oauth_urls_tq'];
+                return new AuthenticationProvider($c->get(GenericProvider::class), [], $urls['jwks']);
+            },
 
             // Monolog
             LoggerInterface::class => function (ContainerInterface $c) {
@@ -485,5 +492,6 @@ class Application
         $console->add($this->container->get(UpdateMemberTracking::class));
         $console->add($this->container->get(DoctrineFixturesLoad::class));
         $console->add($this->container->get(DBVerifySSL::class));
+        $console->add($this->container->get(RevokeToken::class));
     }
 }

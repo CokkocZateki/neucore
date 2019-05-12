@@ -5,6 +5,7 @@ namespace Tests\Unit\Service;
 use Neucore\Entity\Character;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Config;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -64,12 +65,16 @@ class OAuthTokenTest extends TestCase
         $this->client = new Client();
         $oauth = new OAuthProvider($this->client);
 
-        $this->es = new OAuthToken($oauth, new ObjectManager($this->em, $this->log), $this->log);
+        $this->es = new OAuthToken(
+            $oauth, new ObjectManager($this->em, $this->log), $this->log, $this->client, new Config([])
+        );
 
         // a second OAuthToken instance with another entity manager that throws an exception on flush.
         $em = $this->helper->getEm(true);
         $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
-        $this->esError = new OAuthToken($oauth, new ObjectManager($em, $this->log), $this->log);
+        $this->esError = new OAuthToken(
+            $oauth, new ObjectManager($em, $this->log), $this->log, $this->client, new Config([])
+        );
     }
 
     /**
@@ -99,31 +104,12 @@ class OAuthTokenTest extends TestCase
      */
     public function testRefreshAccessTokenIdentityProviderException()
     {
-        $this->client->setResponse(new Response(400, [], '{
-            "error": "invalid_token",
-            "error_description": "The refresh token is expired."
-        }'));
+        $this->client->setResponse(new Response(400, [], '{ "error": "invalid_grant" }'));
 
         $token = new AccessToken([
             'access_token' => 'at',
             'refresh_token' => 'rt',
             'expires' => 1349067601 // 2012-10-01 + 1
-        ]);
-
-        $this->es->refreshAccessToken($token);
-    }
-
-    /**
-     * @expectedException \League\OAuth2\Client\Provider\Exception\IdentityProviderException
-     */
-    public function testRefreshAccessTokenNoRefresh()
-    {
-        $this->client->setResponse(new Response(400, [], '{"error": "invalid_request"}'));
-
-        $token = new AccessToken([
-            'access_token' => 'old-token',
-            'refresh_token' => null,
-            'expires' => time() - 10000
         ]);
 
         $this->es->refreshAccessToken($token);
@@ -168,6 +154,32 @@ class OAuthTokenTest extends TestCase
         $this->assertSame('new-token', $tokenResult->getToken());
     }
 
+    public function testRevokeAccessTokenFailure()
+    {
+        $this->client->setResponse(new Response(400));
+
+        $token = new AccessToken(['access_token' => 'at', 'refresh_token' => 'rt']);
+
+        $result = $this->es->revokeRefreshToken($token);
+
+        $this->assertFalse($result);
+        $this->assertStringStartsWith(
+            'Error revoking token: 400 Bad Request',
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
+    }
+
+    public function testRevokeAccessToken()
+    {
+        $this->client->setResponse(new Response(200));
+
+        $token = new AccessToken(['access_token' => 'at', 'refresh_token' => 'rt']);
+
+        $result = $this->es->revokeRefreshToken($token);
+
+        $this->assertTrue($result);
+    }
+
     public function testGetTokenNoExistingTokenException()
     {
         $token = $this->es->getToken(new Character());
@@ -186,7 +198,7 @@ class OAuthTokenTest extends TestCase
         $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         // response for refreshAccessToken()
-        $this->client->setResponse(new Response(400, [], '{"error": "invalid_token"}'));
+        $this->client->setResponse(new Response(400, [], '{"error": "invalid_grant"}'));
 
         $token = $this->es->getToken($char);
 
@@ -245,48 +257,5 @@ class OAuthTokenTest extends TestCase
         $token = $this->esError->getToken($c);
 
         $this->assertSame('', $token);
-    }
-
-    public function testGetResourceOwnerError()
-    {
-        $this->client->setResponse(
-            // for getResourceOwner()
-            new Response(500)
-        );
-
-        $owner = $this->es->getResourceOwner(new AccessToken([
-            'access_token' => 'at',
-            'expires' => time() - 1800,
-            'refresh_token' => 'rt',
-        ]));
-
-        $this->assertNull($owner);
-    }
-
-    public function testGetResourceOwner()
-    {
-        $this->client->setResponse(
-            // for getResourceOwner()
-            new Response(200, [], '{
-                "CharacterID": "123",
-                "CharacterName": "char name",
-                "ExpiresOn": "2018-05-03T20:27:38.7999223",
-                "CharacterOwnerHash": "coh"
-            }')
-        );
-
-        $owner = $this->es->getResourceOwner(new AccessToken([
-            'access_token' => 'at',
-            'expires' => time() - 1800,
-            'refresh_token' => 'rt',
-        ]));
-
-        $this->assertInstanceOf(ResourceOwnerInterface::class, $owner);
-        $this->assertSame([
-            'CharacterID' => '123',
-            'CharacterName' => 'char name',
-            'ExpiresOn' => '2018-05-03T20:27:38.7999223',
-            'CharacterOwnerHash' => 'coh',
-        ], $owner->toArray());
     }
 }
