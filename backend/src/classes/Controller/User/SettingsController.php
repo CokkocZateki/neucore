@@ -11,9 +11,9 @@ use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
+use OpenApi\Annotations as OA;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
  * Controller for system settings (and maybe user settings later).

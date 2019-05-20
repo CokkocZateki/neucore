@@ -14,10 +14,10 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
+use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Tag(

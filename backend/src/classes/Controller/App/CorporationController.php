@@ -3,10 +3,10 @@
 namespace Neucore\Controller\App;
 
 use Neucore\Factory\RepositoryFactory;
+use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 class CorporationController
 {
@@ -42,7 +42,7 @@ class CorporationController
      *     summary="Return corporation member tracking data.",
      *     description="Needs role: app-tracking",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="id",
      *         in="path",

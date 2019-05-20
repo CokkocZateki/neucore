@@ -8,10 +8,10 @@ use Neucore\Service\OAuthToken;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\MessageInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Tag(

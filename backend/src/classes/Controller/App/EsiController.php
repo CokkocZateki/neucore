@@ -9,6 +9,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\OAuthToken;
+use OpenApi\Annotations as OA;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
@@ -16,7 +17,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 class EsiController
 {
@@ -93,7 +93,7 @@ class EsiController
      *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
                see doc/app-esi-examples.php for more.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="esi-path-query",
      *         in="query",
@@ -185,7 +185,7 @@ class EsiController
      *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
                see doc/app-esi-examples.php for more.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     consumes={"text/plain"},
      *     @SWG\Parameter(
      *         name="esi-path-query",

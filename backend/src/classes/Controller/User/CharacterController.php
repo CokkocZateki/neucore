@@ -9,8 +9,8 @@ use Neucore\Service\Account;
 use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\UserAuth;
+use OpenApi\Annotations as OA;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Tag(

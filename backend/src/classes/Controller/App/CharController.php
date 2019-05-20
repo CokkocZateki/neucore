@@ -3,8 +3,8 @@
 namespace Neucore\Controller\App;
 
 use Neucore\Factory\RepositoryFactory;
+use OpenApi\Annotations as OA;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 class CharController
 {
@@ -33,7 +33,7 @@ class CharController
      *     summary="Returns the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="cid",
      *         in="path",
@@ -82,7 +82,7 @@ class CharController
      *     summary="Return the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="cid",
      *         in="path",
@@ -127,7 +127,7 @@ class CharController
      *     summary="Return the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="characterId",
      *         in="path",
@@ -167,7 +167,7 @@ class CharController
      *     summary="Return all characters of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="characterId",
      *         in="path",
@@ -212,7 +212,7 @@ class CharController
      *     summary="Return all characters that were removed from the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="characterId",
      *         in="path",

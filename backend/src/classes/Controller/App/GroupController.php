@@ -6,10 +6,10 @@ use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\AppAuth;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Definition(
@@ -67,7 +67,7 @@ class GroupController
      *     summary="Return groups of the character's player account.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="cid",
      *         in="path",
@@ -109,7 +109,7 @@ class GroupController
      *     summary="Return groups of the character's player account.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="cid",
      *         in="path",
@@ -152,7 +152,7 @@ class GroupController
      *                  Returns only groups that have been added to the app as well.
      *                  Skips characters that are not found in the local database.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="ids",
      *         in="body",
@@ -187,7 +187,7 @@ class GroupController
      *     summary="Return groups of the corporation.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="cid",
      *         in="path",
@@ -222,7 +222,7 @@ class GroupController
      *     summary="Return groups of the corporation.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="cid",
      *         in="path",
@@ -265,7 +265,7 @@ class GroupController
      *                  Returns only groups that have been added to the app as well.
      *                  Skips corporations that are not found in the local database.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="ids",
      *         in="body",
@@ -300,7 +300,7 @@ class GroupController
      *     summary="Return groups of the alliance.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="aid",
      *         in="path",
@@ -335,7 +335,7 @@ class GroupController
      *     summary="Return groups of the alliance.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="aid",
      *         in="path",
@@ -378,7 +378,7 @@ class GroupController
      *                  Returns only groups that have been added to the app as well.
      *                  Skips alliances that are not found in the local database.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="ids",
      *         in="body",
@@ -415,7 +415,7 @@ class GroupController
      *                  Returns only groups that have been added to the app as well.<br>
      *                  It is not checked if character, corporation and alliance match.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @SWG\Parameter(
      *         name="character",
      *         in="query",

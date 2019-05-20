@@ -1,0 +1,1040 @@
+openapi: 3.0.0
+info:
+  title: Neucore API
+  description: Client library of Neucore API
+  version: 1.0.0
+paths:
+  /app/v1/show:
+    get:
+      tags:
+        - Application
+      summary: Show app information.
+      description: "Needs role: app"
+      operationId: showV1
+      responses:
+        "200":
+          description: The app information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  "/app/v1/main/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Returns the main character of the player account to which the character
+        ID belongs.
+      description: "Needs role: app-chars.<br>It is possible that an account has no main
+        character."
+      operationId: mainV1
+      parameters:
+        - name: cid
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The main character
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Character"
+        "204":
+          description: No main character found.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character (or player) not found. (default reason phrase)
+      security:
+        - Bearer: []
+  "/app/v2/main/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Return the main character of the player account to which the character
+        ID belongs.
+      description: "Needs role: app-chars.<br>It is possible that an account has no main
+        character."
+      operationId: mainV2
+      parameters:
+        - name: cid
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The main character
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Character"
+        "204":
+          description: No main character found.
+        "403":
+          description: Not authorized.
+        "404":
+          description: "Reason phrase: Character not found."
+      security:
+        - Bearer: []
+  "/app/v1/player/{characterId}":
+    get:
+      tags:
+        - Application
+      summary: Return the player account to which the character ID belongs.
+      description: "Needs role: app-chars."
+      operationId: playerV1
+      parameters:
+        - name: characterId
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The player, only id and name properties are returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character not found.
+      security:
+        - Bearer: []
+  "/app/v1/characters/{characterId}":
+    get:
+      tags:
+        - Application
+      summary: Return all characters of the player account to which the character ID
+        belongs.
+      description: "Needs role: app-chars."
+      operationId: charactersV1
+      parameters:
+        - name: characterId
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: All characters from the player account.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Character"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character (or player) not found.
+      security:
+        - Bearer: []
+  "/app/v1/removed-characters/{characterId}":
+    get:
+      tags:
+        - Application
+      summary: Return all characters that were removed from the player account to which
+        the character ID belongs.
+      description: "Needs role: app-chars."
+      operationId: removedCharactersV1
+      parameters:
+        - name: characterId
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: All removed characters from the player account.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RemovedCharacter"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character (or player) not found.
+      security:
+        - Bearer: []
+  "/app/v1/corporation/{id}/member-tracking":
+    get:
+      tags:
+        - Application
+      summary: Return corporation member tracking data.
+      description: "Needs role: app-tracking"
+      operationId: memberTrackingV1
+      parameters:
+        - name: id
+          in: path
+          description: EVE corporation ID.
+          required: true
+          schema:
+            type: integer
+        - name: inactive
+          in: query
+          description: Limit to members who have been inactive for x days or longer.
+          schema:
+            type: integer
+        - name: active
+          in: query
+          description: Limit to members who were active in the last x days.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Members ordered by logonDate descending (character and player
+            properties excluded).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CorporationMember"
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  /app/v1/esi:
+    get:
+      tags:
+        - Application
+      summary: Makes an ESI GET request on behalf on an EVE character and returns the
+        result.
+      description: >-
+        Needs role: app-esi<br>
+             *         Public ESI routes are not allowed.<br>
+             *         The following headers from ESI are passed through to the response:
+                       Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
+             *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>
+             *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
+                       see doc/app-esi-examples.php for more.
+      operationId: esiV1
+      parameters:
+        - name: esi-path-query
+          in: query
+          description: The ESI path and query string (without the datasource parameter).
+          required: true
+          schema:
+            type: string
+        - name: datasource
+          in: query
+          description: The EVE character ID those token should be used to make the ESI
+            request
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The data from ESI.
+          headers:
+            Expires:
+              description: RFC7231 formatted datetime string
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not modified
+          headers:
+            Expires:
+              description: RFC7231 formatted datetime string
+              schema:
+                type: integer
+        "400":
+          description: Bad request, see reason phrase and/or body for more.
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+        "420":
+          description: Error limited
+          content:
+            application/json:
+              schema:
+                type: string
+        "429":
+          description: Maximum permissible ESI error limit reached.
+          content:
+            application/json:
+              schema:
+                type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+        "503":
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                type: string
+        "504":
+          description: Gateway timeout
+          content:
+            application/json:
+              schema:
+                type: string
+      security:
+        - Bearer: []
+    post:
+      tags:
+        - Application
+      summary: Makes an ESI POST request on behalf on an EVE character and returns the
+        result.
+      description: >-
+        Needs role: app-esi<br>
+             *         Public ESI routes are not allowed.<br>
+             *         The following headers from ESI are passed through to the response:
+                       Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
+             *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>
+             *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
+                       see doc/app-esi-examples.php for more.
+      operationId: esiPostV1
+      parameters:
+        - name: esi-path-query
+          in: query
+          description: The ESI path and query string (without the datasource parameter).
+          required: true
+          schema:
+            type: string
+        - name: datasource
+          in: query
+          description: The EVE character ID those token should be used to make the ESI
+            request
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+        description: JSON encoded data.
+        required: true
+      responses:
+        "200":
+          description: The data from ESI.
+          headers:
+            Expires:
+              description: RFC7231 formatted datetime string
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not modified
+          headers:
+            Expires:
+              description: RFC7231 formatted datetime string
+              schema:
+                type: integer
+        "400":
+          description: Bad request, see reason phrase and/or body for more.
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+        "420":
+          description: Error limited
+          content:
+            application/json:
+              schema:
+                type: string
+        "429":
+          description: Maximum permissible ESI error limit reached.
+          content:
+            application/json:
+              schema:
+                type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+        "503":
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                type: string
+        "504":
+          description: Gateway timeout
+          content:
+            application/json:
+              schema:
+                type: string
+      security:
+        - Bearer: []
+  "/app/v1/groups/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the character's player account.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: groupsV1
+      parameters:
+        - name: cid
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character not found. (default reason phrase)
+      security:
+        - Bearer: []
+  "/app/v2/groups/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the character's player account.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: groupsV2
+      parameters:
+        - name: cid
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: "Reason phrase: Character not found."
+      security:
+        - Bearer: []
+  /app/v1/groups:
+    post:
+      tags:
+        - Application
+      summary: Return groups of multiple players, identified by one of their character
+        IDs.
+      description: >-
+        Needs role: app-groups.<br>
+             *                  Returns only groups that have been added to the app as well.
+             *                  Skips characters that are not found in the local database.
+      operationId: groupsBulkV1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        description: EVE character IDs array.
+        required: true
+      responses:
+        "200":
+          description: List of characters (id, name and corporation properties only) with
+            groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CharacterGroups"
+        "400":
+          description: Invalid body.
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  "/app/v1/corp-groups/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the corporation.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: corpGroupsV1
+      parameters:
+        - name: cid
+          in: path
+          description: EVE corporation ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Corporation not found. (default reason phrase)
+      security:
+        - Bearer: []
+  "/app/v2/corp-groups/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the corporation.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: corpGroupsV2
+      parameters:
+        - name: cid
+          in: path
+          description: EVE corporation ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: "Reason phrase: Corporation not found."
+      security:
+        - Bearer: []
+  /app/v1/corp-groups:
+    post:
+      tags:
+        - Application
+      summary: Return groups of multiple corporations.
+      description: >-
+        Needs role: app-groups.<br>
+             *                  Returns only groups that have been added to the app as well.
+             *                  Skips corporations that are not found in the local database.
+      operationId: corpGroupsBulkV1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        description: EVE corporation IDs array.
+        required: true
+      responses:
+        "200":
+          description: List of corporations with groups but without alliance.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Corporation"
+        "400":
+          description: Invalid body.
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  "/app/v1/alliance-groups/{aid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the alliance.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: allianceGroupsV1
+      parameters:
+        - name: aid
+          in: path
+          description: EVE alliance ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Alliance not found. (default reason phrase)
+      security:
+        - Bearer: []
+  "/app/v2/alliance-groups/{aid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the alliance.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: allianceGroupsV2
+      parameters:
+        - name: aid
+          in: path
+          description: EVE alliance ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: "Reason phrase: Alliance not found."
+      security:
+        - Bearer: []
+  /app/v1/alliance-groups:
+    post:
+      tags:
+        - Application
+      summary: Return groups of multiple alliances.
+      description: >-
+        Needs role: app-groups.<br>
+             *                  Returns only groups that have been added to the app as well.
+             *                  Skips alliances that are not found in the local database.
+      operationId: allianceGroupsBulkV1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        description: EVE alliance IDs array.
+        required: true
+      responses:
+        "200":
+          description: List of alliances with groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alliance"
+        "400":
+          description: Invalid body.
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  /app/v1/groups-with-fallback:
+    get:
+      tags:
+        - Application
+      summary: Returns groups from the character's account, if available, or the
+        corporation and alliance.
+      description: >-
+        Needs role: app-groups.<br>
+             *                  Returns only groups that have been added to the app as well.<br>
+             *                  It is not checked if character, corporation and alliance match.
+      operationId: groupsWithFallbackV1
+      parameters:
+        - name: character
+          in: query
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+        - name: corporation
+          in: query
+          description: EVE corporation ID.
+          required: true
+          schema:
+            type: integer
+        - name: alliance
+          in: query
+          description: EVE alliance ID.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+tags:
+  - name: Application
+    description: API for applications.
+servers:
+  - url: https://localhost/api
+  - url: http://localhost/api
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: "Example: Bearer ABC"
+      name: Authorization
+      in: header
+  schemas:
+    CharacterGroups:
+      required:
+        - character
+        - groups
+      properties:
+        character:
+          $ref: "#/components/schemas/Character"
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+    Alliance:
+      required:
+        - id
+        - name
+        - ticker
+      properties:
+        id:
+          description: EVE alliance ID.
+          type: integer
+          format: int64
+        name:
+          description: EVE alliance name.
+          type: string
+        ticker:
+          description: Alliance ticker.
+          type: string
+        groups:
+          description: "Groups for automatic assignment (API: not included by default)."
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+    App:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          description: App ID
+          type: integer
+        name:
+          description: App name
+          type: string
+          maxLength: 255
+        roles:
+          description: Roles for authorization.
+          type: array
+          items:
+            $ref: "#/components/schemas/Role"
+        groups:
+          description: Groups the app can see.
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+    Character:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          description: EVE character ID.
+          type: integer
+          format: int64
+        name:
+          description: EVE character name.
+          type: string
+        main:
+          type: boolean
+        validToken:
+          description: |-
+            Shows if character's refresh token is valid or not.
+
+            If there is no refresh token this is null.
+          type: boolean
+        lastUpdate:
+          description: Last ESI update.
+          type: string
+          format: date-time
+        corporation:
+          $ref: "#/components/schemas/Corporation"
+    Corporation:
+      required:
+        - id
+        - name
+        - ticker
+      properties:
+        id:
+          description: EVE corporation ID.
+          type: integer
+          format: int64
+        name:
+          description: EVE corporation name.
+          type: string
+        ticker:
+          description: Corporation ticker.
+          type: string
+        alliance:
+          $ref: "#/components/schemas/Alliance"
+        groups:
+          description: "Groups for automatic assignment (API: not included by default)."
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+    CorporationMember:
+      description: The player property contains only id and name, character does not
+        contain corporation.
+      required:
+        - id
+        - name
+      properties:
+        player:
+          $ref: "#/components/schemas/Player"
+        id:
+          description: EVE Character ID.
+          type: integer
+          format: int64
+        name:
+          description: EVE Character name.
+          type: string
+        locationId:
+          description: Corporation ticker.
+          type: integer
+        logoffDate:
+          type: string
+          format: date-time
+        logonDate:
+          type: string
+          format: date-time
+        shipTypeId:
+          type: integer
+        startDate:
+          type: string
+          format: date-time
+        character:
+          $ref: "#/components/schemas/Character"
+    Group:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          description: Group ID.
+          type: integer
+        name:
+          description: A unique group name (can be changed).
+          type: string
+          maxLength: 64
+          pattern: ^[-._a-zA-Z0-9]+$
+        visibility:
+          type: string
+          enum:
+            - private
+            - public
+            - conditioned
+    GroupApplication:
+      description: The player property contains only id and name.
+      required:
+        - id
+        - player
+        - group
+        - created
+      properties:
+        id:
+          type: integer
+        player:
+          $ref: "#/components/schemas/Player"
+        group:
+          $ref: "#/components/schemas/Group"
+        created:
+          type: string
+          format: date-time
+        status:
+          description: Group application status.
+          type: string
+          enum:
+            - pending
+            - accepted
+            - denied
+    Player:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+        name:
+          description: |-
+            A name for the player.
+
+            This is the EVE character name of the current main character or of
+            the last main character if there is currently none.
+          type: string
+        status:
+          description: Player account status.
+          type: string
+          enum:
+            - standard
+            - managed
+        roles:
+          description: Roles for authorization.
+          type: array
+          items:
+            $ref: "#/components/schemas/Role"
+        characters:
+          type: array
+          items:
+            $ref: "#/components/schemas/Character"
+        groups:
+          description: Group membership.
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+        managerGroups:
+          description: Manager of groups.
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+        managerApps:
+          description: Manager of apps.
+          type: array
+          items:
+            $ref: "#/components/schemas/App"
+        removedCharacters:
+          description: "Characters that were removed from a player (API: not included by
+            default)."
+          type: array
+          items:
+            $ref: "#/components/schemas/RemovedCharacter"
+    RemovedCharacter:
+      required:
+        - characterId
+        - characterName
+        - removedDate
+        - reason
+      properties:
+        newPlayerId:
+          type: integer
+        newPlayerName:
+          type: string
+        characterId:
+          description: EVE character ID.
+          type: integer
+          format: int64
+        characterName:
+          description: EVE character name.
+          type: string
+        removedDate:
+          description: Date of removal.
+          type: string
+          format: date-time
+        reason:
+          description: How it was removed (deleted or moved to another account).
+          enum:
+            - moved
+            - deleted-manually
+            - deleted-biomassed
+            - deleted-owner-changed
+    Role:
+      type: string
+      enum:
+        - app
+        - app-groups
+        - app-chars
+        - app-tracking
+        - app-esi
+        - user
+        - user-admin
+        - user-manager
+        - app-admin
+        - app-manager
+        - group-admin
+        - group-manager
+        - esi
+        - settings
+        - tracking
+    SystemVariable:
+      required:
+        - name
+        - value
+      properties:
+        name:
+          description: Variable name.
+          type: string
+          maxLength: 255
+        value:
+          description: Variable value.
+          type: string

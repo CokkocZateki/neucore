@@ -2,17 +2,16 @@
 
 namespace Neucore\Entity;
 
-use Neucore\Api;
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use Neucore\Api;
+use OpenApi\Annotations as OA;
 
 /**
  * EVE character.
  *
  * This is the user that logs in via EVE SSO.
  *
- * @SWG\Definition(
- *     definition="Character",
+ * @OA\Schema(
  *     required={"id", "name"}
  * )
  * @ORM\Entity
@@ -24,7 +23,7 @@ class Character implements \JsonSerializable
     /**
      * EVE character ID.
      *
-     * @SWG\Property(format="int64")
+     * @OA\Property(format="int64")
      * @ORM\Id
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
@@ -35,7 +34,7 @@ class Character implements \JsonSerializable
     /**
      * EVE character name.
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="string", length=255)
      * @var string
      */
@@ -43,7 +42,7 @@ class Character implements \JsonSerializable
 
     /**
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="boolean")
      * @var bool
      */
@@ -81,7 +80,7 @@ class Character implements \JsonSerializable
      *
      * If there is no refresh token this is null.
      *
-     * @SWG\Property(type="boolean")
+     * @OA\Property(type="boolean")
      * @ORM\Column(type="boolean", name="valid_token", nullable=true)
      * @var bool|null
      */
@@ -112,7 +111,7 @@ class Character implements \JsonSerializable
     /**
      * Last ESI update.
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="datetime", name="last_update", nullable=true)
      * @var \DateTime
      */
@@ -127,7 +126,7 @@ class Character implements \JsonSerializable
 
     /**
      *
-     * @SWG\Property(ref="#/definitions/Corporation")
+     * @OA\Property(ref="#/components/schemas/Corporation")
      * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="characters")
      * @var Corporation|null
      */

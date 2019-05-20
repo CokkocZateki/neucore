@@ -27,7 +27,7 @@
         "symfony/yaml": "^4.0",
         "tkhamez/slim-role-auth": "^1.0",
         "tkhamez/swagger-eve-php": "~2.0.0",
-        "zircote/swagger-php": "^2.0"
+        "zircote/swagger-php": "^3.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.14",
@@ -67,9 +67,9 @@
         "db:migrate": "doctrine-migrations migrations:migrate --no-interaction",
         "db:seed": "bin/console doctrine-fixtures-load",
         "openapi": [
-            "swagger src --output ../web",
-            "swagger src --output ../web/frontend-api.json --exclude src/classes/Controller/App",
-            "swagger src --output ../web/application-api.json --exclude src/classes/Controller/User"
+            "openapi src/classes --output ../web/openapi.yaml",
+            "openapi src/classes --output ../web/frontend-api-3.yml --exclude src/classes/Controller/App",
+            "openapi src/classes --output ../web/application-api-3.yml --exclude src/classes/Controller/User"
         ],
         "cache:clear": "rm -rf var/cache/di; rm -rf var/cache/http; rm -rf var/cache/proxies",
         "analyse:src": "phpstan analyse src/classes --level 7",

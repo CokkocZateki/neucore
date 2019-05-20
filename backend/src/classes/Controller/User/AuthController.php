@@ -2,6 +2,7 @@
 
 namespace Neucore\Controller\User;
 
+use Brave\Sso\Basics\AuthenticationProvider;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
@@ -11,10 +12,9 @@ use Neucore\Service\MemberTracking;
 use Neucore\Service\Random;
 use Neucore\Service\UserAuth;
 use Neucore\Slim\Session\SessionData;
-use Brave\Sso\Basics\AuthenticationProvider;
+use OpenApi\Annotations as OA;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
  * @SWG\SecurityScheme(

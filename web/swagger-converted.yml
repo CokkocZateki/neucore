@@ -1,0 +1,3173 @@
+openapi: 3.0.0
+info:
+  title: Neucore API
+  description: Client library of Neucore API
+  version: 1.0.0
+paths:
+  /app/v1/show:
+    get:
+      tags:
+        - Application
+      summary: Show app information.
+      description: "Needs role: app"
+      operationId: showV1
+      responses:
+        "200":
+          description: The app information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  "/app/v1/main/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Returns the main character of the player account to which the character
+        ID belongs.
+      description: "Needs role: app-chars.<br>It is possible that an account has no main
+        character."
+      operationId: mainV1
+      parameters:
+        - name: cid
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The main character
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Character"
+        "204":
+          description: No main character found.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character (or player) not found. (default reason phrase)
+      security:
+        - Bearer: []
+  "/app/v2/main/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Return the main character of the player account to which the character
+        ID belongs.
+      description: "Needs role: app-chars.<br>It is possible that an account has no main
+        character."
+      operationId: mainV2
+      parameters:
+        - name: cid
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The main character
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Character"
+        "204":
+          description: No main character found.
+        "403":
+          description: Not authorized.
+        "404":
+          description: "Reason phrase: Character not found."
+      security:
+        - Bearer: []
+  "/app/v1/player/{characterId}":
+    get:
+      tags:
+        - Application
+      summary: Return the player account to which the character ID belongs.
+      description: "Needs role: app-chars."
+      operationId: playerV1
+      parameters:
+        - name: characterId
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The player, only id and name properties are returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character not found.
+      security:
+        - Bearer: []
+  "/app/v1/characters/{characterId}":
+    get:
+      tags:
+        - Application
+      summary: Return all characters of the player account to which the character ID
+        belongs.
+      description: "Needs role: app-chars."
+      operationId: charactersV1
+      parameters:
+        - name: characterId
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: All characters from the player account.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Character"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character (or player) not found.
+      security:
+        - Bearer: []
+  "/app/v1/removed-characters/{characterId}":
+    get:
+      tags:
+        - Application
+      summary: Return all characters that were removed from the player account to which
+        the character ID belongs.
+      description: "Needs role: app-chars."
+      operationId: removedCharactersV1
+      parameters:
+        - name: characterId
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: All removed characters from the player account.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RemovedCharacter"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character (or player) not found.
+      security:
+        - Bearer: []
+  "/app/v1/corporation/{id}/member-tracking":
+    get:
+      tags:
+        - Application
+      summary: Return corporation member tracking data.
+      description: "Needs role: app-tracking"
+      operationId: memberTrackingV1
+      parameters:
+        - name: id
+          in: path
+          description: EVE corporation ID.
+          required: true
+          schema:
+            type: integer
+        - name: inactive
+          in: query
+          description: Limit to members who have been inactive for x days or longer.
+          schema:
+            type: integer
+        - name: active
+          in: query
+          description: Limit to members who were active in the last x days.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Members ordered by logonDate descending (character and player
+            properties excluded).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CorporationMember"
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  /app/v1/esi:
+    get:
+      tags:
+        - Application
+      summary: Makes an ESI GET request on behalf on an EVE character and returns the
+        result.
+      description: >-
+        Needs role: app-esi<br>
+             *         Public ESI routes are not allowed.<br>
+             *         The following headers from ESI are passed through to the response:
+                       Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
+             *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>
+             *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
+                       see doc/app-esi-examples.php for more.
+      operationId: esiV1
+      parameters:
+        - name: esi-path-query
+          in: query
+          description: The ESI path and query string (without the datasource parameter).
+          required: true
+          schema:
+            type: string
+        - name: datasource
+          in: query
+          description: The EVE character ID those token should be used to make the ESI
+            request
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The data from ESI.
+          headers:
+            Expires:
+              description: RFC7231 formatted datetime string
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not modified
+          headers:
+            Expires:
+              description: RFC7231 formatted datetime string
+              schema:
+                type: integer
+        "400":
+          description: Bad request, see reason phrase and/or body for more.
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+        "420":
+          description: Error limited
+          content:
+            application/json:
+              schema:
+                type: string
+        "429":
+          description: Maximum permissible ESI error limit reached.
+          content:
+            application/json:
+              schema:
+                type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+        "503":
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                type: string
+        "504":
+          description: Gateway timeout
+          content:
+            application/json:
+              schema:
+                type: string
+      security:
+        - Bearer: []
+    post:
+      tags:
+        - Application
+      summary: Makes an ESI POST request on behalf on an EVE character and returns the
+        result.
+      description: >-
+        Needs role: app-esi<br>
+             *         Public ESI routes are not allowed.<br>
+             *         The following headers from ESI are passed through to the response:
+                       Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
+             *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>
+             *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
+                       see doc/app-esi-examples.php for more.
+      operationId: esiPostV1
+      parameters:
+        - name: esi-path-query
+          in: query
+          description: The ESI path and query string (without the datasource parameter).
+          required: true
+          schema:
+            type: string
+        - name: datasource
+          in: query
+          description: The EVE character ID those token should be used to make the ESI
+            request
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+        description: JSON encoded data.
+        required: true
+      responses:
+        "200":
+          description: The data from ESI.
+          headers:
+            Expires:
+              description: RFC7231 formatted datetime string
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not modified
+          headers:
+            Expires:
+              description: RFC7231 formatted datetime string
+              schema:
+                type: integer
+        "400":
+          description: Bad request, see reason phrase and/or body for more.
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+        "420":
+          description: Error limited
+          content:
+            application/json:
+              schema:
+                type: string
+        "429":
+          description: Maximum permissible ESI error limit reached.
+          content:
+            application/json:
+              schema:
+                type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+        "503":
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                type: string
+        "504":
+          description: Gateway timeout
+          content:
+            application/json:
+              schema:
+                type: string
+      security:
+        - Bearer: []
+  "/app/v1/groups/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the character's player account.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: groupsV1
+      parameters:
+        - name: cid
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character not found. (default reason phrase)
+      security:
+        - Bearer: []
+  "/app/v2/groups/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the character's player account.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: groupsV2
+      parameters:
+        - name: cid
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: "Reason phrase: Character not found."
+      security:
+        - Bearer: []
+  /app/v1/groups:
+    post:
+      tags:
+        - Application
+      summary: Return groups of multiple players, identified by one of their character
+        IDs.
+      description: >-
+        Needs role: app-groups.<br>
+             *                  Returns only groups that have been added to the app as well.
+             *                  Skips characters that are not found in the local database.
+      operationId: groupsBulkV1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        description: EVE character IDs array.
+        required: true
+      responses:
+        "200":
+          description: List of characters (id, name and corporation properties only) with
+            groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CharacterGroups"
+        "400":
+          description: Invalid body.
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  "/app/v1/corp-groups/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the corporation.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: corpGroupsV1
+      parameters:
+        - name: cid
+          in: path
+          description: EVE corporation ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Corporation not found. (default reason phrase)
+      security:
+        - Bearer: []
+  "/app/v2/corp-groups/{cid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the corporation.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: corpGroupsV2
+      parameters:
+        - name: cid
+          in: path
+          description: EVE corporation ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: "Reason phrase: Corporation not found."
+      security:
+        - Bearer: []
+  /app/v1/corp-groups:
+    post:
+      tags:
+        - Application
+      summary: Return groups of multiple corporations.
+      description: >-
+        Needs role: app-groups.<br>
+             *                  Returns only groups that have been added to the app as well.
+             *                  Skips corporations that are not found in the local database.
+      operationId: corpGroupsBulkV1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        description: EVE corporation IDs array.
+        required: true
+      responses:
+        "200":
+          description: List of corporations with groups but without alliance.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Corporation"
+        "400":
+          description: Invalid body.
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  "/app/v1/alliance-groups/{aid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the alliance.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: allianceGroupsV1
+      parameters:
+        - name: aid
+          in: path
+          description: EVE alliance ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Alliance not found. (default reason phrase)
+      security:
+        - Bearer: []
+  "/app/v2/alliance-groups/{aid}":
+    get:
+      tags:
+        - Application
+      summary: Return groups of the alliance.
+      description: "Needs role: app-groups.<br>Returns only groups that have been added to
+        the app as well."
+      operationId: allianceGroupsV2
+      parameters:
+        - name: aid
+          in: path
+          description: EVE alliance ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: "Reason phrase: Alliance not found."
+      security:
+        - Bearer: []
+  /app/v1/alliance-groups:
+    post:
+      tags:
+        - Application
+      summary: Return groups of multiple alliances.
+      description: >-
+        Needs role: app-groups.<br>
+             *                  Returns only groups that have been added to the app as well.
+             *                  Skips alliances that are not found in the local database.
+      operationId: allianceGroupsBulkV1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        description: EVE alliance IDs array.
+        required: true
+      responses:
+        "200":
+          description: List of alliances with groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alliance"
+        "400":
+          description: Invalid body.
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  /app/v1/groups-with-fallback:
+    get:
+      tags:
+        - Application
+      summary: Returns groups from the character's account, if available, or the
+        corporation and alliance.
+      description: >-
+        Needs role: app-groups.<br>
+             *                  Returns only groups that have been added to the app as well.<br>
+             *                  It is not checked if character, corporation and alliance match.
+      operationId: groupsWithFallbackV1
+      parameters:
+        - name: character
+          in: query
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+        - name: corporation
+          in: query
+          description: EVE corporation ID.
+          required: true
+          schema:
+            type: integer
+        - name: alliance
+          in: query
+          description: EVE alliance ID.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+      security:
+        - Bearer: []
+  /user/alliance/all:
+    get:
+      tags:
+        - Alliance
+      summary: List all alliances.
+      description: "Needs role: group-admin"
+      operationId: all
+      responses:
+        "200":
+          description: List of alliances.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alliance"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/alliance/with-groups:
+    get:
+      tags:
+        - Alliance
+      summary: List all alliances that have groups assigned.
+      description: "Needs role: group-admin"
+      operationId: withGroups
+      responses:
+        "200":
+          description: List of alliances (this one includes the groups property).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alliance"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  "/user/alliance/add/{id}":
+    post:
+      tags:
+        - Alliance
+      summary: Add an EVE alliance to the database.
+      description: >-
+        Needs role: group-admin
+             *                  This makes an ESI request and adds the alliance only if it exists
+      operationId: add
+      parameters:
+        - name: id
+          in: path
+          description: EVE alliance ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: The new alliance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alliance"
+        "400":
+          description: Invalid alliance ID.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Alliance not found.
+        "409":
+          description: The alliance already exists.
+        "503":
+          description: ESI request failed.
+      security:
+        - Session: []
+  "/user/alliance/{id}/add-group/{gid}":
+    put:
+      tags:
+        - Alliance
+      summary: Add a group to the alliance.
+      description: "Needs role: group-admin"
+      operationId: addGroup
+      parameters:
+        - name: id
+          in: path
+          description: ID of the alliance.
+          required: true
+          schema:
+            type: integer
+        - name: gid
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Group added.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Alliance and/or group not found.
+      security:
+        - Session: []
+  "/user/alliance/{id}/remove-group/{gid}":
+    put:
+      tags:
+        - Alliance
+      summary: Remove a group from the alliance.
+      description: "Needs role: group-admin"
+      operationId: removeGroup
+      parameters:
+        - name: id
+          in: path
+          description: ID of the alliance.
+          required: true
+          schema:
+            type: integer
+        - name: gid
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Group removed.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Alliance and/or group not found.
+      security:
+        - Session: []
+  /user/app/all:
+    get:
+      tags:
+        - App
+      summary: List all apps.
+      description: "Needs role: app-admin"
+      operationId: all
+      responses:
+        "200":
+          description: List of apps (only id and name properties are returned).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/App"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/app/create:
+    post:
+      tags:
+        - App
+      summary: Create an app.
+      description: "Needs role: app-admin<br>Generates a random secret that must be changed
+        by an app manager."
+      operationId: create
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the app.
+                  type: string
+                  maxLength: 255
+              required:
+                - name
+      responses:
+        "201":
+          description: The new app.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+        "400":
+          description: App name is invalid/missing.
+        "403":
+          description: Not authorized.
+        "500":
+          description: If creation of app failed.
+      security:
+        - Session: []
+  "/user/app/{id}/rename":
+    put:
+      tags:
+        - App
+      summary: Rename an app.
+      description: "Needs role: app-admin"
+      operationId: rename
+      parameters:
+        - name: id
+          in: path
+          description: ID of the app.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: New name for the app.
+                  type: string
+                  maxLength: 64
+              required:
+                - name
+      responses:
+        "200":
+          description: App was renamed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+        "400":
+          description: App name is invalid/missing.
+        "403":
+          description: Not authorized.
+        "404":
+          description: App not found.
+      security:
+        - Session: []
+  "/user/app/{id}/delete":
+    delete:
+      tags:
+        - App
+      summary: Delete an app.
+      description: "Needs role: app-admin"
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          description: ID of the app.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: App was deleted.
+        "403":
+          description: Not authorized.
+        "404":
+          description: App not found.
+      security:
+        - Session: []
+  "/user/app/{id}/managers":
+    get:
+      tags:
+        - App
+      summary: List all managers of an app.
+      description: "Needs role: app-admin"
+      operationId: managers
+      parameters:
+        - name: id
+          in: path
+          description: App ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of players ordered by name. Only id, name and roles properties
+            are returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+        "404":
+          description: App not found.
+      security:
+        - Session: []
+  "/user/app/{id}/add-manager/{pid}":
+    put:
+      tags:
+        - App
+      summary: Assign a player as manager to an app.
+      description: "Needs role: app-admin"
+      operationId: addManager
+      parameters:
+        - name: id
+          in: path
+          description: ID of the app.
+          required: true
+          schema:
+            type: integer
+        - name: pid
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Player added as manager.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player and/or app not found.
+      security:
+        - Session: []
+  "/user/app/{id}/remove-manager/{pid}":
+    put:
+      tags:
+        - App
+      summary: Remove a manager (player) from an app.
+      description: "Needs role: app-admin"
+      operationId: removeManager
+      parameters:
+        - name: id
+          in: path
+          description: ID of the app.
+          required: true
+          schema:
+            type: integer
+        - name: pid
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Player removed from managers.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player and/or app not found.
+      security:
+        - Session: []
+  "/user/app/{id}/show":
+    get:
+      tags:
+        - App
+      summary: Shows app information.
+      description: |-
+        Needs role: app-admin, app-manager
+             *                  Managers can only see groups of their own apps.
+      operationId: show
+      parameters:
+        - name: id
+          in: path
+          description: App ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The app information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/App"
+        "403":
+          description: Not authorized.
+        "404":
+          description: App not found.
+      security:
+        - Session: []
+  "/user/app/{id}/add-group/{gid}":
+    put:
+      tags:
+        - App
+      summary: Add a group to an app.
+      description: "Needs role: app-admin"
+      operationId: addGroup
+      parameters:
+        - name: id
+          in: path
+          description: ID of the app.
+          required: true
+          schema:
+            type: integer
+        - name: gid
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Group added to app.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group and/or app not found.
+      security:
+        - Session: []
+  "/user/app/{id}/remove-group/{gid}":
+    put:
+      tags:
+        - App
+      summary: Remove a group from an app.
+      description: "Needs role: app-admin"
+      operationId: removeGroup
+      parameters:
+        - name: id
+          in: path
+          description: ID of the app.
+          required: true
+          schema:
+            type: integer
+        - name: gid
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Group removed from the app.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group and/or app not found.
+      security:
+        - Session: []
+  "/user/app/{id}/add-role/{name}":
+    put:
+      tags:
+        - App
+      summary: Add a role to the app.
+      description: "Needs role: app-admin"
+      operationId: addRole
+      parameters:
+        - name: id
+          in: path
+          description: ID of the app.
+          required: true
+          schema:
+            type: integer
+        - name: name
+          in: path
+          description: Name of the role.
+          required: true
+          schema:
+            type: string
+            enum:
+              - app-groups
+              - app-chars
+              - app-tracking
+              - app-esi
+      responses:
+        "204":
+          description: Role added.
+        "403":
+          description: Not authorized.
+        "404":
+          description: App and/or role not found or invalid.
+      security:
+        - Session: []
+  "/user/app/{id}/remove-role/{name}":
+    put:
+      tags:
+        - App
+      summary: Remove a role from an app.
+      description: "Needs role: app-admin"
+      operationId: removeRole
+      parameters:
+        - name: id
+          in: path
+          description: ID of the app.
+          required: true
+          schema:
+            type: integer
+        - name: name
+          in: path
+          description: Name of the role.
+          required: true
+          schema:
+            type: string
+            enum:
+              - app-groups
+              - app-chars
+              - app-tracking
+              - app-esi
+      responses:
+        "204":
+          description: Role removed.
+        "403":
+          description: Not authorized.
+        "404":
+          description: App and/or role not found or invalid.
+      security:
+        - Session: []
+  "/user/app/{id}/change-secret":
+    put:
+      tags:
+        - App
+      summary: Generates a new application secret. The new secret is returned, it
+        cannot be retrieved afterwards.
+      description: "Needs role: app-manager"
+      operationId: changeSecret
+      parameters:
+        - name: id
+          in: path
+          description: ID of the app.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The new secret.
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Not authorized.
+        "404":
+          description: App not found.
+        "500":
+          description: Failed to created new secret.
+      security:
+        - Session: []
+  /user/auth/result:
+    get:
+      tags:
+        - Auth
+      summary: Result of last SSO attempt.
+      operationId: result
+      responses:
+        "200":
+          description: The result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResult"
+  /user/auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: User logout.
+      description: "Needs role: user"
+      operationId: logout
+      responses:
+        "204":
+          description: User was logged out.
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/character/show:
+    get:
+      tags:
+        - Character
+      summary: Return the logged in EVE character.
+      description: "Needs role: user"
+      operationId: show
+      responses:
+        "200":
+          description: The logged in EVE character.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Character"
+        "403":
+          description: Not authorized
+      security:
+        - Session: []
+  "/user/character/find-by/{name}":
+    get:
+      tags:
+        - Character
+      summary: Return a list of characters that matches the name (partial matching).
+      description: "Needs role: user-admin or group-manager"
+      operationId: findBy
+      parameters:
+        - name: name
+          in: path
+          description: Name of the character.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of characters (ID and name only).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Character"
+        "403":
+          description: Not authorized
+      security:
+        - Session: []
+  "/user/character/find-player-of/{id}":
+    get:
+      tags:
+        - Character
+      summary: Return the player to whom the character belongs.
+      description: "Needs role: user-admin or group-manager"
+      operationId: findPlayerOf
+      parameters:
+        - name: id
+          in: path
+          description: ID of the character.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The player with id and name properties only.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+        "204":
+          description: No player found.
+        "403":
+          description: Not authorized
+      security:
+        - Session: []
+  "/user/character/{id}/update":
+    put:
+      tags:
+        - Character
+      summary: Update a character with data from ESI.
+      description: >-
+        Needs role: user or user-admin to update any character.
+             *                  It also updates groups and verifies the OAuth token.
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          description: EVE character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The updated character.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Character"
+        "204":
+          description: If the character was deleted because the owner hash changed.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character not found on this account.
+        "503":
+          description: ESI request failed.
+      security:
+        - Session: []
+  /user/corporation/all:
+    get:
+      tags:
+        - Corporation
+      summary: List all corporations.
+      description: "Needs role: group-admin"
+      operationId: all
+      responses:
+        "200":
+          description: List of corporations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Corporation"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/corporation/with-groups:
+    get:
+      tags:
+        - Corporation
+      summary: List all corporations that have groups assigned.
+      description: "Needs role: group-admin"
+      operationId: withGroups
+      responses:
+        "200":
+          description: List of corporations (this one includes the groups property).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Corporation"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  "/user/corporation/add/{id}":
+    post:
+      tags:
+        - Corporation
+      summary: Add an EVE corporation to the database.
+      description: >-
+        Needs role: group-admin
+             *                  This makes an ESI request and adds the corporation only if it exists.
+             *                  Also adds the corresponding alliance, if there is one.
+      operationId: add
+      parameters:
+        - name: id
+          in: path
+          description: EVE corporation ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: The new corporation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Corporation"
+        "400":
+          description: Invalid corporation ID.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Corporation not found.
+        "409":
+          description: The corporation already exists.
+        "503":
+          description: ESI request failed.
+      security:
+        - Session: []
+  "/user/corporation/{id}/add-group/{gid}":
+    put:
+      tags:
+        - Corporation
+      summary: Add a group to the corporation.
+      description: "Needs role: group-admin"
+      operationId: addGroup
+      parameters:
+        - name: id
+          in: path
+          description: ID of the corporation.
+          required: true
+          schema:
+            type: integer
+        - name: gid
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Group added.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Corporation and/or group not found.
+      security:
+        - Session: []
+  "/user/corporation/{id}/remove-group/{gid}":
+    put:
+      tags:
+        - Corporation
+      summary: Remove a group from the corporation.
+      description: "Needs role: group-admin"
+      operationId: removeGroup
+      parameters:
+        - name: id
+          in: path
+          description: ID of the corporation.
+          required: true
+          schema:
+            type: integer
+        - name: gid
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Group removed.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Corporation and/or group not found.
+      security:
+        - Session: []
+  /user/corporation/tracked-corporations:
+    get:
+      tags:
+        - Corporation
+      summary: Returns all corporations that have member tracking data.
+      description: "Needs role: tracking"
+      operationId: trackedCorporations
+      responses:
+        "200":
+          description: List of characters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Corporation"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  "/user/corporation/{id}/members":
+    get:
+      tags:
+        - Corporation
+      summary: Returns tracking data of corporation members.
+      description: "Needs role: tracking"
+      operationId: members
+      parameters:
+        - name: id
+          in: path
+          description: ID of the corporation.
+          required: true
+          schema:
+            type: integer
+        - name: inactive
+          in: query
+          description: Limit to members who have been inactive for x days or longer.
+          schema:
+            type: integer
+        - name: active
+          in: query
+          description: Limit to members who were active in the last x days.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of corporation members.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CorporationMember"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/esi/request:
+    get:
+      tags:
+        - ESI
+      summary: ESI request.
+      description: >-
+        Needs role: user-admin
+             *                  Example route: /characters/{character_id}/stats/
+             *                  Only for GET request.
+             *                  Only the {character_id} placeholder is implemented.
+      operationId: request
+      parameters:
+        - name: character
+          in: query
+          description: EVE character ID.
+          schema:
+            type: integer
+        - name: route
+          in: query
+          description: The ESI route.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The result from ESI or an error message.
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Error.
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/group/all:
+    get:
+      tags:
+        - Group
+      summary: List all groups.
+      description: "Needs role: app-admin, group-admin or user-manager"
+      operationId: all
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/group/public:
+    get:
+      tags:
+        - Group
+      summary: List all public groups.
+      description: "Needs role: user"
+      operationId: public
+      responses:
+        "200":
+          description: List of groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/group/create:
+    post:
+      tags:
+        - Group
+      summary: Create a group.
+      description: "Needs role: group-admin"
+      operationId: create
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the group.
+                  type: string
+                  maxLength: 64
+                  pattern: ^[-._a-zA-Z0-9]+$
+              required:
+                - name
+      responses:
+        "201":
+          description: The new group.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "400":
+          description: Group name is invalid.
+        "403":
+          description: Not authorized.
+        "409":
+          description: A group with this name already exists.
+      security:
+        - Session: []
+  "/user/group/{id}/rename":
+    put:
+      tags:
+        - Group
+      summary: Rename a group.
+      description: "Needs role: group-admin"
+      operationId: rename
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: New name for the group.
+                  type: string
+                  maxLength: 64
+                  pattern: ^[-._a-zA-Z0-9]+$
+              required:
+                - name
+      responses:
+        "200":
+          description: Group was renamed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "400":
+          description: Group name is invalid.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+        "409":
+          description: A group with this name already exists.
+      security:
+        - Session: []
+  "/user/group/{id}/set-visibility/{choice}":
+    put:
+      tags:
+        - Group
+      summary: Change visibility of a group.
+      description: "Needs role: group-admin"
+      operationId: setVisibility
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+        - name: choice
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - private
+              - public
+              - conditioned
+      responses:
+        "200":
+          description: Visibility changed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "400":
+          description: Invalid 'choice' parameter.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+      security:
+        - Session: []
+  "/user/group/{id}/delete":
+    delete:
+      tags:
+        - Group
+      summary: Delete a group.
+      description: "Needs role: group-admin"
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Group was deleted.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+      security:
+        - Session: []
+  "/user/group/{id}/managers":
+    get:
+      tags:
+        - Group
+      summary: List all managers of a group.
+      description: "Needs role: group-admin"
+      operationId: managers
+      parameters:
+        - name: id
+          in: path
+          description: Group ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of players ordered by name. Only id, name and roles properties
+            are returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+      security:
+        - Session: []
+  "/user/group/{id}/corporations":
+    get:
+      tags:
+        - Group
+      summary: List all corporations of a group.
+      description: "Needs role: group-admin"
+      operationId: corporations
+      parameters:
+        - name: id
+          in: path
+          description: Group ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of corporations ordered by name.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Corporation"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+      security:
+        - Session: []
+  "/user/group/{id}/alliances":
+    get:
+      tags:
+        - Group
+      summary: List all alliances of a group.
+      description: "Needs role: group-admin"
+      operationId: alliances
+      parameters:
+        - name: id
+          in: path
+          description: Group ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of alliances ordered by name.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alliance"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+      security:
+        - Session: []
+  "/user/group/{id}/required-groups":
+    get:
+      tags:
+        - Group
+      summary: List all required groups of a group.
+      description: "Needs role: group-admin, group-manager"
+      operationId: requiredGroups
+      parameters:
+        - name: id
+          in: path
+          description: Group ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of groups ordered by name.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Group"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+      security:
+        - Session: []
+  "/user/group/{id}/add-required/{groupId}":
+    put:
+      tags:
+        - Group
+      summary: Add required group to a group.
+      description: "Needs role: group-admin"
+      operationId: addRequiredGroup
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+        - name: groupId
+          in: path
+          description: ID of the group to add.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Group added.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group(s) not found.
+      security:
+        - Session: []
+  "/user/group/{id}/remove-required/{groupId}":
+    put:
+      tags:
+        - Group
+      summary: Remove required group from a group.
+      description: "Needs role: group-admin"
+      operationId: removeRequiredGroup
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+        - name: groupId
+          in: path
+          description: ID of the group to remove.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Group removed.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group(s) not found.
+      security:
+        - Session: []
+  "/user/group/{id}/add-manager/{pid}":
+    put:
+      tags:
+        - Group
+      summary: Assign a player as manager to a group.
+      description: "Needs role: group-admin"
+      operationId: addManager
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+        - name: pid
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Player added as manager.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player and/or group not found.
+      security:
+        - Session: []
+  "/user/group/{id}/remove-manager/{pid}":
+    put:
+      tags:
+        - Group
+      summary: Remove a manager (player) from a group.
+      description: "Needs role: group-admin"
+      operationId: removeManager
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+        - name: pid
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Player removed from managers.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player and/or group not found.
+      security:
+        - Session: []
+  "/user/group/{id}/applications":
+    get:
+      tags:
+        - Group
+      summary: List all applications of a group.
+      description: "Needs role: group-manager"
+      operationId: applications
+      parameters:
+        - name: id
+          in: path
+          description: Group ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of group applications ordered by created date.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupApplication"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+      security:
+        - Session: []
+  "/user/group/accept-application/{id}":
+    put:
+      tags:
+        - Group
+      summary: Accept a player's request to join a group.
+      description: "Needs role: group-manager"
+      operationId: acceptApplication
+      parameters:
+        - name: id
+          in: path
+          description: ID of the application.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Application accepted.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Application not found.
+      security:
+        - Session: []
+  "/user/group/deny-application/{id}":
+    put:
+      tags:
+        - Group
+      summary: Deny a player's request to join a group.
+      description: "Needs role: group-manager"
+      operationId: denyApplication
+      parameters:
+        - name: id
+          in: path
+          description: ID of the application.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Application denied.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Application not found.
+      security:
+        - Session: []
+  "/user/group/{id}/add-member/{pid}":
+    put:
+      tags:
+        - Group
+      summary: Adds a player to a group.
+      description: "Needs role: group-manager or user-manager"
+      operationId: addMember
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+        - name: pid
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Player added.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player and/or group not found.
+      security:
+        - Session: []
+  "/user/group/{id}/remove-member/{pid}":
+    put:
+      tags:
+        - Group
+      summary: Remove player from a group.
+      description: "Needs role: group-manager or user-manager"
+      operationId: removeMember
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+        - name: pid
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Player removed.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player and/or group not found.
+      security:
+        - Session: []
+  "/user/group/{id}/members":
+    get:
+      tags:
+        - Group
+      summary: List all members of a group.
+      description: "Needs role: group-manager"
+      operationId: members
+      parameters:
+        - name: id
+          in: path
+          description: Group ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of players ordered by name. Only id and name properties are
+            returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+      security:
+        - Session: []
+  /user/player/show:
+    get:
+      tags:
+        - Player
+      summary: Return the logged in player with all properties.
+      description: "Needs role: user"
+      operationId: show
+      responses:
+        "200":
+          description: The player information.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/player/groups-disabled:
+    get:
+      tags:
+        - Player
+      summary: Check whether groups for this account are disabled or will be disabled
+        soon.
+      description: "Needs role: user"
+      operationId: groupsDisabled
+      responses:
+        "200":
+          description: True if groups are disabled, otherwise false.
+          content:
+            application/json:
+              schema:
+                type: boolean
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  "/user/player/{id}/groups-disabled":
+    get:
+      tags:
+        - Player
+      summary: Check whether groups for this account are disabled or will be disabled
+        soon.
+      description: "Needs role: user-admin"
+      operationId: groupsDisabledById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: True if groups are disabled, otherwise false.
+          content:
+            application/json:
+              schema:
+                type: boolean
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player not found.
+      security:
+        - Session: []
+  "/user/player/add-application/{gid}":
+    put:
+      tags:
+        - Player
+      summary: Submit a group application.
+      description: "Needs role: user"
+      operationId: addApplication
+      parameters:
+        - name: gid
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Application submitted.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+      security:
+        - Session: []
+  "/user/player/remove-application/{gid}":
+    put:
+      tags:
+        - Player
+      summary: Cancel a group application.
+      description: "Needs role: user"
+      operationId: removeApplication
+      parameters:
+        - name: gid
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Application canceled.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Application not found.
+      security:
+        - Session: []
+  /user/player/show-applications:
+    get:
+      tags:
+        - Player
+      summary: Show all group applications.
+      description: "Needs role: user"
+      operationId: showApplications
+      responses:
+        "200":
+          description: The group applications.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupApplication"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  "/user/player/leave-group/{gid}":
+    put:
+      tags:
+        - Player
+      summary: Leave a group.
+      description: "Needs role: user"
+      operationId: leaveGroup
+      parameters:
+        - name: gid
+          in: path
+          description: ID of the group.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Group left.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Group not found.
+      security:
+        - Session: []
+  "/user/player/set-main/{cid}":
+    put:
+      tags:
+        - Player
+      summary: Change the main character from the player account.
+      description: "Needs role: user"
+      operationId: setMain
+      parameters:
+        - name: cid
+          in: path
+          description: Character ID.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The main character.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Character"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Character not found on this account.
+      security:
+        - Session: []
+  "/user/player/{id}/set-status/{status}":
+    put:
+      tags:
+        - Player
+      summary: Change the player's account status.
+      description: "Needs role: user-admin"
+      operationId: setStatus
+      parameters:
+        - name: id
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+        - name: status
+          in: path
+          description: The new status.
+          required: true
+          schema:
+            type: string
+            enum:
+              - standard
+              - managed
+      responses:
+        "204":
+          description: Status changed.
+        "400":
+          description: Invalid player or status.
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/player/with-characters:
+    get:
+      tags:
+        - Player
+      summary: List all players with characters.
+      description: "Needs role: user-admin"
+      operationId: withCharacters
+      responses:
+        "200":
+          description: List of players ordered by name. Only id and name properties are
+            returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/player/without-characters:
+    get:
+      tags:
+        - Player
+      summary: List all players without characters.
+      description: "Needs role: user-admin"
+      operationId: withoutCharacters
+      responses:
+        "200":
+          description: List of players ordered by name. Only id and name properties are
+            returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/player/app-managers:
+    get:
+      tags:
+        - Player
+      summary: List all players with the role app-manger.
+      description: "Needs role: app-admin"
+      operationId: appManagers
+      responses:
+        "200":
+          description: List of players ordered by name. Only id and name properties are
+            returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  /user/player/group-managers:
+    get:
+      tags:
+        - Player
+      summary: List all players with the role group-manger.
+      description: "Needs role: group-admin"
+      operationId: groupManagers
+      responses:
+        "200":
+          description: List of players ordered by name. Only id and name properties are
+            returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  "/user/player/with-role/{name}":
+    get:
+      tags:
+        - Player
+      summary: List all players with a role.
+      description: "Needs role: user-admin"
+      operationId: withRole
+      parameters:
+        - name: name
+          in: path
+          description: Role name.
+          required: true
+          schema:
+            type: string
+            enum:
+              - app-admin
+              - app-manager
+              - group-admin
+              - group-manager
+              - user-admin
+              - user-manager
+              - esi
+              - settings
+              - tracking
+      responses:
+        "200":
+          description: List of players ordered by name. Only id and name properties are
+            returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+        "400":
+          description: Invalid role name.
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  "/user/player/with-status/{name}":
+    get:
+      tags:
+        - Player
+      summary: Lists all players with characters who have a certain status.
+      description: "Needs role: user-admin, user-manager"
+      operationId: withStatus
+      parameters:
+        - name: name
+          in: path
+          description: Status name.
+          required: true
+          schema:
+            type: string
+            enum:
+              - standard
+              - managed
+      responses:
+        "200":
+          description: List of players ordered by name. Only id and name properties are
+            returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+        "400":
+          description: Invalid status name.
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  "/user/player/{id}/add-role/{name}":
+    put:
+      tags:
+        - Player
+      summary: Add a role to the player.
+      description: "Needs role: user-admin"
+      operationId: addRole
+      parameters:
+        - name: id
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+        - name: name
+          in: path
+          description: Name of the role.
+          required: true
+          schema:
+            type: string
+            enum:
+              - app-admin
+              - app-manager
+              - group-admin
+              - group-manager
+              - user-admin
+              - user-manager
+              - esi
+              - settings
+              - tracking
+      responses:
+        "204":
+          description: Role added.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player and/or role not found or invalid.
+      security:
+        - Session: []
+  "/user/player/{id}/remove-role/{name}":
+    put:
+      tags:
+        - Player
+      summary: Remove a role from a player.
+      description: "Needs role: user-admin"
+      operationId: removeRole
+      parameters:
+        - name: id
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+        - name: name
+          in: path
+          description: Name of the role.
+          required: true
+          schema:
+            type: string
+            enum:
+              - app-admin
+              - app-manager
+              - group-admin
+              - group-manager
+              - user-admin
+              - user-manager
+              - esi
+              - settings
+              - tracking
+      responses:
+        "204":
+          description: Role removed.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player and/or role not found or invalid.
+      security:
+        - Session: []
+  "/user/player/{id}/show":
+    get:
+      tags:
+        - Player
+      summary: Show all data from a player.
+      description: "Needs role: user-admin, user-manager"
+      operationId: showById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The player information (this one includes the removedCharacters
+            property).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player not found.
+      security:
+        - Session: []
+  "/user/player/{id}/characters":
+    get:
+      tags:
+        - Player
+      summary: Show player with characters.
+      description: "Needs role: app-admin, group-admin, user-manager, group-manager,
+        tracking"
+      operationId: characters
+      parameters:
+        - name: id
+          in: path
+          description: ID of the player.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The player with id, name and characters properties only.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+        "403":
+          description: Not authorized.
+        "404":
+          description: Player not found.
+      security:
+        - Session: []
+  "/user/player/delete-character/{id}":
+    delete:
+      tags:
+        - Player
+      summary: Delete a character.
+      description: "Needs role: user, user-admin"
+      operationId: deleteCharacter
+      parameters:
+        - name: id
+          in: path
+          description: ID of the character.
+          required: true
+          schema:
+            type: integer
+        - name: admin
+          in: query
+          description: Indicates that the deletion was triggered from the admin interface.
+          schema:
+            type: integer
+            enum:
+              - 0
+              - 1
+      responses:
+        "204":
+          description: Character was deleted.
+        "403":
+          description: Not authorized or feature disabled.
+        "404":
+          description: Character not found.
+        "409":
+          description: Trying to delete logged in character.
+      security:
+        - Session: []
+  /user/settings/system/list:
+    get:
+      tags:
+        - Settings
+      summary: List all settings.
+      description: Some variables need the role 'settings'
+      operationId: systemList
+      responses:
+        "200":
+          description: List of settings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SystemVariable"
+      security:
+        - Session: []
+  "/user/settings/system/change/{name}":
+    put:
+      tags:
+        - Settings
+      summary: Change a system settings variable.
+      description: "Needs role: settings"
+      operationId: systemChange
+      parameters:
+        - name: name
+          in: path
+          description: Name of the variable.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                value:
+                  description: New value for the variable.
+                  type: string
+              required:
+                - value
+      responses:
+        "200":
+          description: Variable value changed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemVariable"
+        "204":
+          description: Variable removed.
+        "403":
+          description: Not authorized.
+        "404":
+          description: Variable not found.
+      security:
+        - Session: []
+  /user/settings/system/send-account-disabled-mail:
+    post:
+      tags:
+        - Settings
+      summary: Sends a 'Account disabled' test mail to the logged-in character.
+      description: "Needs role: settings"
+      operationId: sendAccountDisabledMail
+      responses:
+        "200":
+          description: Error message, if available.
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+  "/user/settings/system/validate-director/{name}":
+    put:
+      tags:
+        - Settings
+      summary: Validates ESI token from a director and updates name and corporation.
+      description: "Needs role: settings"
+      operationId: validateDirector
+      parameters:
+        - name: name
+          in: path
+          description: Name of the director variable.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: True if the access token is valid, otherwise false
+          content:
+            application/json:
+              schema:
+                type: boolean
+        "403":
+          description: Not authorized.
+      security:
+        - Session: []
+tags:
+  - name: Application
+    description: API for applications.
+  - name: Alliance
+    description: Alliance management (for automatic group assignment).
+  - name: App
+    description: Application management.
+  - name: Auth
+    description: User authentication.
+  - name: Character
+    description: Character related functions.
+  - name: Corporation
+    description: Corporation management (for automatic group assignment) and tracking.
+  - name: ESI
+    description: ESI requests
+  - name: Group
+    description: Group management.
+  - name: Player
+    description: Player management.
+  - name: Settings
+    description: System settings.
+servers:
+  - url: https://localhost/api
+  - url: http://localhost/api
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: "Example: Bearer ABC"
+      name: Authorization
+      in: header
+    Session:
+      type: apiKey
+      description: "Example: BCSESS=123"
+      name: Cookie
+      in: header
+  schemas:
+    CharacterGroups:
+      required:
+        - character
+        - groups
+      properties:
+        character:
+          $ref: "#/components/schemas/Character"
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+    LoginResult:
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    Alliance:
+      required:
+        - id
+        - name
+        - ticker
+      properties:
+        id:
+          description: EVE alliance ID.
+          type: integer
+          format: int64
+        name:
+          description: EVE alliance name.
+          type: string
+        ticker:
+          description: Alliance ticker.
+          type: string
+        groups:
+          description: "Groups for automatic assignment (API: not included by default)."
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+    App:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          description: App ID
+          type: integer
+        name:
+          description: App name
+          type: string
+          maxLength: 255
+        roles:
+          description: Roles for authorization.
+          type: array
+          items:
+            $ref: "#/components/schemas/Role"
+        groups:
+          description: Groups the app can see.
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+    Character:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          description: EVE character ID.
+          type: integer
+          format: int64
+        name:
+          description: EVE character name.
+          type: string
+        main:
+          type: boolean
+        validToken:
+          description: |-
+            Shows if character's refresh token is valid or not.
+
+            If there is no refresh token this is null.
+          type: boolean
+        lastUpdate:
+          description: Last ESI update.
+          type: string
+          format: date-time
+        corporation:
+          $ref: "#/components/schemas/Corporation"
+    Corporation:
+      required:
+        - id
+        - name
+        - ticker
+      properties:
+        id:
+          description: EVE corporation ID.
+          type: integer
+          format: int64
+        name:
+          description: EVE corporation name.
+          type: string
+        ticker:
+          description: Corporation ticker.
+          type: string
+        alliance:
+          $ref: "#/components/schemas/Alliance"
+        groups:
+          description: "Groups for automatic assignment (API: not included by default)."
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+    CorporationMember:
+      description: The player property contains only id and name, character does not
+        contain corporation.
+      required:
+        - id
+        - name
+      properties:
+        player:
+          $ref: "#/components/schemas/Player"
+        id:
+          description: EVE Character ID.
+          type: integer
+          format: int64
+        name:
+          description: EVE Character name.
+          type: string
+        locationId:
+          description: Corporation ticker.
+          type: integer
+        logoffDate:
+          type: string
+          format: date-time
+        logonDate:
+          type: string
+          format: date-time
+        shipTypeId:
+          type: integer
+        startDate:
+          type: string
+          format: date-time
+        character:
+          $ref: "#/components/schemas/Character"
+    Group:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          description: Group ID.
+          type: integer
+        name:
+          description: A unique group name (can be changed).
+          type: string
+          maxLength: 64
+          pattern: ^[-._a-zA-Z0-9]+$
+        visibility:
+          type: string
+          enum:
+            - private
+            - public
+            - conditioned
+    GroupApplication:
+      description: The player property contains only id and name.
+      required:
+        - id
+        - player
+        - group
+        - created
+      properties:
+        id:
+          type: integer
+        player:
+          $ref: "#/components/schemas/Player"
+        group:
+          $ref: "#/components/schemas/Group"
+        created:
+          type: string
+          format: date-time
+        status:
+          description: Group application status.
+          type: string
+          enum:
+            - pending
+            - accepted
+            - denied
+    Player:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+        name:
+          description: |-
+            A name for the player.
+
+            This is the EVE character name of the current main character or of
+            the last main character if there is currently none.
+          type: string
+        status:
+          description: Player account status.
+          type: string
+          enum:
+            - standard
+            - managed
+        roles:
+          description: Roles for authorization.
+          type: array
+          items:
+            $ref: "#/components/schemas/Role"
+        characters:
+          type: array
+          items:
+            $ref: "#/components/schemas/Character"
+        groups:
+          description: Group membership.
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+        managerGroups:
+          description: Manager of groups.
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+        managerApps:
+          description: Manager of apps.
+          type: array
+          items:
+            $ref: "#/components/schemas/App"
+        removedCharacters:
+          description: "Characters that were removed from a player (API: not included by
+            default)."
+          type: array
+          items:
+            $ref: "#/components/schemas/RemovedCharacter"
+    RemovedCharacter:
+      required:
+        - characterId
+        - characterName
+        - removedDate
+        - reason
+      properties:
+        newPlayerId:
+          type: integer
+        newPlayerName:
+          type: string
+        characterId:
+          description: EVE character ID.
+          type: integer
+          format: int64
+        characterName:
+          description: EVE character name.
+          type: string
+        removedDate:
+          description: Date of removal.
+          type: string
+          format: date-time
+        reason:
+          description: How it was removed (deleted or moved to another account).
+          enum:
+            - moved
+            - deleted-manually
+            - deleted-biomassed
+            - deleted-owner-changed
+    Role:
+      type: string
+      enum:
+        - app
+        - app-groups
+        - app-chars
+        - app-tracking
+        - app-esi
+        - user
+        - user-admin
+        - user-manager
+        - app-admin
+        - app-manager
+        - group-admin
+        - group-manager
+        - esi
+        - settings
+        - tracking
+    SystemVariable:
+      required:
+        - name
+        - value
+      properties:
+        name:
+          description: Variable name.
+          type: string
+          maxLength: 255
+        value:
+          description: Variable value.
+          type: string

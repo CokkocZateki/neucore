@@ -1,0 +1,4339 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Neucore API",
+        "description": "Client library of Neucore API",
+        "version": "1.0.0"
+    },
+    "host": "localhost",
+    "basePath": "/api",
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/app/v1/show": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Show app information.",
+                "description": "Needs role: app",
+                "operationId": "showV1",
+                "responses": {
+                    "200": {
+                        "description": "The app information",
+                        "schema": {
+                            "$ref": "#/definitions/App"
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/main/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Returns the main character of the player account to which the character ID belongs.",
+                "description": "Needs role: app-chars.<br>It is possible that an account has no main character.",
+                "operationId": "mainV1",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The main character",
+                        "schema": {
+                            "$ref": "#/definitions/Character"
+                        }
+                    },
+                    "204": {
+                        "description": "No main character found."
+                    },
+                    "404": {
+                        "description": "Character (or player) not found. (default reason phrase)"
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v2/main/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return the main character of the player account to which the character ID belongs.",
+                "description": "Needs role: app-chars.<br>It is possible that an account has no main character.",
+                "operationId": "mainV2",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The main character",
+                        "schema": {
+                            "$ref": "#/definitions/Character"
+                        }
+                    },
+                    "204": {
+                        "description": "No main character found."
+                    },
+                    "404": {
+                        "description": "Reason phrase: Character not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/player/{characterId}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return the player account to which the character ID belongs.",
+                "description": "Needs role: app-chars.",
+                "operationId": "playerV1",
+                "parameters": [
+                    {
+                        "name": "characterId",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The player, only id and name properties are returned.",
+                        "schema": {
+                            "$ref": "#/definitions/Player"
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    },
+                    "404": {
+                        "description": "Character not found."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/characters/{characterId}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return all characters of the player account to which the character ID belongs.",
+                "description": "Needs role: app-chars.",
+                "operationId": "charactersV1",
+                "parameters": [
+                    {
+                        "name": "characterId",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All characters from the player account.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Character"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Character (or player) not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/removed-characters/{characterId}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return all characters that were removed from the player account to which the character ID belongs.",
+                "description": "Needs role: app-chars.",
+                "operationId": "removedCharactersV1",
+                "parameters": [
+                    {
+                        "name": "characterId",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All removed characters from the player account.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/RemovedCharacter"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Character (or player) not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/corporation/{id}/member-tracking": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return corporation member tracking data.",
+                "description": "Needs role: app-tracking",
+                "operationId": "memberTrackingV1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "EVE corporation ID.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "inactive",
+                        "in": "query",
+                        "description": "Limit to members who have been inactive for x days or longer.",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "active",
+                        "in": "query",
+                        "description": "Limit to members who were active in the last x days.",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Members ordered by logonDate descending (character and player properties excluded).",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/CorporationMember"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/esi": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Makes an ESI GET request on behalf on an EVE character and returns the result.",
+                "description": "Needs role: app-esi<br>\n     *         Public ESI routes are not allowed.<br>\n     *         The following headers from ESI are passed through to the response:\n               Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>\n     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>\n     *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,\n               see doc/app-esi-examples.php for more.",
+                "operationId": "esiV1",
+                "parameters": [
+                    {
+                        "name": "esi-path-query",
+                        "in": "query",
+                        "description": "The ESI path and query string (without the datasource parameter).",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "datasource",
+                        "in": "query",
+                        "description": "The EVE character ID those token should be used to make the ESI request",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The data from ESI.",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "headers": {
+                            "Expires": {
+                                "description": "RFC7231 formatted datetime string",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "304": {
+                        "description": "Not modified",
+                        "headers": {
+                            "Expires": {
+                                "description": "RFC7231 formatted datetime string",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, see reason phrase and/or body for more.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "420": {
+                        "description": "Error limited",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "429": {
+                        "description": "Maximum permissible ESI error limit reached.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway timeout",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Makes an ESI POST request on behalf on an EVE character and returns the result.",
+                "description": "Needs role: app-esi<br>\n     *         Public ESI routes are not allowed.<br>\n     *         The following headers from ESI are passed through to the response:\n               Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>\n     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>\n     *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,\n               see doc/app-esi-examples.php for more.",
+                "operationId": "esiPostV1",
+                "consumes": [
+                    "text/plain"
+                ],
+                "parameters": [
+                    {
+                        "name": "esi-path-query",
+                        "in": "query",
+                        "description": "The ESI path and query string (without the datasource parameter).",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "datasource",
+                        "in": "query",
+                        "description": "The EVE character ID those token should be used to make the ESI request",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "JSON encoded data.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The data from ESI.",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "headers": {
+                            "Expires": {
+                                "description": "RFC7231 formatted datetime string",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "304": {
+                        "description": "Not modified",
+                        "headers": {
+                            "Expires": {
+                                "description": "RFC7231 formatted datetime string",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, see reason phrase and/or body for more.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "420": {
+                        "description": "Error limited",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "429": {
+                        "description": "Maximum permissible ESI error limit reached.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway timeout",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/groups/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the character's player account.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "groupsV1",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Character not found. (default reason phrase)"
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v2/groups/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the character's player account.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "groupsV2",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reason phrase: Character not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/groups": {
+            "post": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of multiple players, identified by one of their character IDs.",
+                "description": "Needs role: app-groups.<br>\n     *                  Returns only groups that have been added to the app as well.\n     *                  Skips characters that are not found in the local database.",
+                "operationId": "groupsBulkV1",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "body",
+                        "description": "EVE character IDs array.",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of characters (id, name and corporation properties only) with groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/CharacterGroups"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid body."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/corp-groups/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the corporation.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "corpGroupsV1",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE corporation ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Corporation not found. (default reason phrase)"
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v2/corp-groups/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the corporation.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "corpGroupsV2",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE corporation ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reason phrase: Corporation not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/corp-groups": {
+            "post": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of multiple corporations.",
+                "description": "Needs role: app-groups.<br>\n     *                  Returns only groups that have been added to the app as well.\n     *                  Skips corporations that are not found in the local database.",
+                "operationId": "corpGroupsBulkV1",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "body",
+                        "description": "EVE corporation IDs array.",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of corporations with groups but without alliance.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Corporation"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid body."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/alliance-groups/{aid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the alliance.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "allianceGroupsV1",
+                "parameters": [
+                    {
+                        "name": "aid",
+                        "in": "path",
+                        "description": "EVE alliance ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Alliance not found. (default reason phrase)"
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v2/alliance-groups/{aid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the alliance.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "allianceGroupsV2",
+                "parameters": [
+                    {
+                        "name": "aid",
+                        "in": "path",
+                        "description": "EVE alliance ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reason phrase: Alliance not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/alliance-groups": {
+            "post": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of multiple alliances.",
+                "description": "Needs role: app-groups.<br>\n     *                  Returns only groups that have been added to the app as well.\n     *                  Skips alliances that are not found in the local database.",
+                "operationId": "allianceGroupsBulkV1",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "body",
+                        "description": "EVE alliance IDs array.",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of alliances with groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Alliance"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid body."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/groups-with-fallback": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Returns groups from the character's account, if available, or the corporation and alliance.",
+                "description": "Needs role: app-groups.<br>\n     *                  Returns only groups that have been added to the app as well.<br>\n     *                  It is not checked if character, corporation and alliance match.",
+                "operationId": "groupsWithFallbackV1",
+                "parameters": [
+                    {
+                        "name": "character",
+                        "in": "query",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "corporation",
+                        "in": "query",
+                        "description": "EVE corporation ID.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "alliance",
+                        "in": "query",
+                        "description": "EVE alliance ID.",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/user/alliance/all": {
+            "get": {
+                "tags": [
+                    "Alliance"
+                ],
+                "summary": "List all alliances.",
+                "description": "Needs role: group-admin",
+                "operationId": "all",
+                "responses": {
+                    "200": {
+                        "description": "List of alliances.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Alliance"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/alliance/with-groups": {
+            "get": {
+                "tags": [
+                    "Alliance"
+                ],
+                "summary": "List all alliances that have groups assigned.",
+                "description": "Needs role: group-admin",
+                "operationId": "withGroups",
+                "responses": {
+                    "200": {
+                        "description": "List of alliances (this one includes the groups property).",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Alliance"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/alliance/add/{id}": {
+            "post": {
+                "tags": [
+                    "Alliance"
+                ],
+                "summary": "Add an EVE alliance to the database.",
+                "description": "Needs role: group-admin\n     *                  This makes an ESI request and adds the alliance only if it exists",
+                "operationId": "add",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "EVE alliance ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "The new alliance.",
+                        "schema": {
+                            "$ref": "#/definitions/Alliance"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid alliance ID."
+                    },
+                    "404": {
+                        "description": "Alliance not found."
+                    },
+                    "409": {
+                        "description": "The alliance already exists."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    },
+                    "503": {
+                        "description": "ESI request failed."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/alliance/{id}/add-group/{gid}": {
+            "put": {
+                "tags": [
+                    "Alliance"
+                ],
+                "summary": "Add a group to the alliance.",
+                "description": "Needs role: group-admin",
+                "operationId": "addGroup",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the alliance.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "gid",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Group added."
+                    },
+                    "404": {
+                        "description": "Alliance and/or group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/alliance/{id}/remove-group/{gid}": {
+            "put": {
+                "tags": [
+                    "Alliance"
+                ],
+                "summary": "Remove a group from the alliance.",
+                "description": "Needs role: group-admin",
+                "operationId": "removeGroup",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the alliance.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "gid",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Group removed."
+                    },
+                    "404": {
+                        "description": "Alliance and/or group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/all": {
+            "get": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "List all apps.",
+                "description": "Needs role: app-admin",
+                "operationId": "all",
+                "responses": {
+                    "200": {
+                        "description": "List of apps (only id and name properties are returned).",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/App"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/create": {
+            "post": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Create an app.",
+                "description": "Needs role: app-admin<br>Generates a random secret that must be changed by an app manager.",
+                "operationId": "create",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "Name of the app.",
+                        "required": true,
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "The new app.",
+                        "schema": {
+                            "$ref": "#/definitions/App"
+                        }
+                    },
+                    "400": {
+                        "description": "App name is invalid/missing."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    },
+                    "500": {
+                        "description": "If creation of app failed."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/rename": {
+            "put": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Rename an app.",
+                "description": "Needs role: app-admin",
+                "operationId": "rename",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the app.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "New name for the app.",
+                        "required": true,
+                        "type": "string",
+                        "maxLength": 64
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "App was renamed.",
+                        "schema": {
+                            "$ref": "#/definitions/App"
+                        }
+                    },
+                    "404": {
+                        "description": "App not found."
+                    },
+                    "400": {
+                        "description": "App name is invalid/missing."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/delete": {
+            "delete": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Delete an app.",
+                "description": "Needs role: app-admin",
+                "operationId": "delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the app.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "App was deleted."
+                    },
+                    "404": {
+                        "description": "App not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/managers": {
+            "get": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "List all managers of an app.",
+                "description": "Needs role: app-admin",
+                "operationId": "managers",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "App ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of players ordered by name. Only id, name and roles properties are returned.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "App not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/add-manager/{pid}": {
+            "put": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Assign a player as manager to an app.",
+                "description": "Needs role: app-admin",
+                "operationId": "addManager",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the app.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "pid",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Player added as manager."
+                    },
+                    "404": {
+                        "description": "Player and/or app not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/remove-manager/{pid}": {
+            "put": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Remove a manager (player) from an app.",
+                "description": "Needs role: app-admin",
+                "operationId": "removeManager",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the app.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "pid",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Player removed from managers."
+                    },
+                    "404": {
+                        "description": "Player and/or app not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/show": {
+            "get": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Shows app information.",
+                "description": "Needs role: app-admin, app-manager\n     *                  Managers can only see groups of their own apps.",
+                "operationId": "show",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "App ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The app information",
+                        "schema": {
+                            "$ref": "#/definitions/App"
+                        }
+                    },
+                    "404": {
+                        "description": "App not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/add-group/{gid}": {
+            "put": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Add a group to an app.",
+                "description": "Needs role: app-admin",
+                "operationId": "addGroup",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the app.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "gid",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Group added to app."
+                    },
+                    "404": {
+                        "description": "Group and/or app not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/remove-group/{gid}": {
+            "put": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Remove a group from an app.",
+                "description": "Needs role: app-admin",
+                "operationId": "removeGroup",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the app.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "gid",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Group removed from the app."
+                    },
+                    "404": {
+                        "description": "Group and/or app not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/add-role/{name}": {
+            "put": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Add a role to the app.",
+                "description": "Needs role: app-admin",
+                "operationId": "addRole",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the app.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Name of the role.",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "app-groups",
+                            "app-chars",
+                            "app-tracking",
+                            "app-esi"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Role added."
+                    },
+                    "404": {
+                        "description": "App and/or role not found or invalid."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/remove-role/{name}": {
+            "put": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Remove a role from an app.",
+                "description": "Needs role: app-admin",
+                "operationId": "removeRole",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the app.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Name of the role.",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "app-groups",
+                            "app-chars",
+                            "app-tracking",
+                            "app-esi"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Role removed."
+                    },
+                    "404": {
+                        "description": "App and/or role not found or invalid."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/app/{id}/change-secret": {
+            "put": {
+                "tags": [
+                    "App"
+                ],
+                "summary": "Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.",
+                "description": "Needs role: app-manager",
+                "operationId": "changeSecret",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the app.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The new secret.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "App not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    },
+                    "500": {
+                        "description": "Failed to created new secret."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/auth/result": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Result of last SSO attempt.",
+                "operationId": "result",
+                "responses": {
+                    "200": {
+                        "description": "The result.",
+                        "schema": {
+                            "$ref": "#/definitions/LoginResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "User logout.",
+                "description": "Needs role: user",
+                "operationId": "logout",
+                "responses": {
+                    "204": {
+                        "description": "User was logged out."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/character/show": {
+            "get": {
+                "tags": [
+                    "Character"
+                ],
+                "summary": "Return the logged in EVE character.",
+                "description": "Needs role: user",
+                "operationId": "show",
+                "responses": {
+                    "200": {
+                        "description": "The logged in EVE character.",
+                        "schema": {
+                            "$ref": "#/definitions/Character"
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized"
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/character/find-by/{name}": {
+            "get": {
+                "tags": [
+                    "Character"
+                ],
+                "summary": "Return a list of characters that matches the name (partial matching).",
+                "description": "Needs role: user-admin or group-manager",
+                "operationId": "findBy",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Name of the character.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of characters (ID and name only).",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Character"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized"
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/character/find-player-of/{id}": {
+            "get": {
+                "tags": [
+                    "Character"
+                ],
+                "summary": "Return the player to whom the character belongs.",
+                "description": "Needs role: user-admin or group-manager",
+                "operationId": "findPlayerOf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the character.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The player with id and name properties only.",
+                        "schema": {
+                            "$ref": "#/definitions/Player"
+                        }
+                    },
+                    "204": {
+                        "description": "No player found."
+                    },
+                    "403": {
+                        "description": "Not authorized"
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/character/{id}/update": {
+            "put": {
+                "tags": [
+                    "Character"
+                ],
+                "summary": "Update a character with data from ESI.",
+                "description": "Needs role: user or user-admin to update any character.\n     *                  It also updates groups and verifies the OAuth token.",
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The updated character.",
+                        "schema": {
+                            "$ref": "#/definitions/Character"
+                        }
+                    },
+                    "204": {
+                        "description": "If the character was deleted because the owner hash changed."
+                    },
+                    "404": {
+                        "description": "Character not found on this account."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    },
+                    "503": {
+                        "description": "ESI request failed."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/corporation/all": {
+            "get": {
+                "tags": [
+                    "Corporation"
+                ],
+                "summary": "List all corporations.",
+                "description": "Needs role: group-admin",
+                "operationId": "all",
+                "responses": {
+                    "200": {
+                        "description": "List of corporations.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Corporation"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/corporation/with-groups": {
+            "get": {
+                "tags": [
+                    "Corporation"
+                ],
+                "summary": "List all corporations that have groups assigned.",
+                "description": "Needs role: group-admin",
+                "operationId": "withGroups",
+                "responses": {
+                    "200": {
+                        "description": "List of corporations (this one includes the groups property).",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Corporation"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/corporation/add/{id}": {
+            "post": {
+                "tags": [
+                    "Corporation"
+                ],
+                "summary": "Add an EVE corporation to the database.",
+                "description": "Needs role: group-admin\n     *                  This makes an ESI request and adds the corporation only if it exists.\n     *                  Also adds the corresponding alliance, if there is one.",
+                "operationId": "add",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "EVE corporation ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "The new corporation.",
+                        "schema": {
+                            "$ref": "#/definitions/Corporation"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid corporation ID."
+                    },
+                    "404": {
+                        "description": "Corporation not found."
+                    },
+                    "409": {
+                        "description": "The corporation already exists."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    },
+                    "503": {
+                        "description": "ESI request failed."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/corporation/{id}/add-group/{gid}": {
+            "put": {
+                "tags": [
+                    "Corporation"
+                ],
+                "summary": "Add a group to the corporation.",
+                "description": "Needs role: group-admin",
+                "operationId": "addGroup",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the corporation.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "gid",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Group added."
+                    },
+                    "404": {
+                        "description": "Corporation and/or group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/corporation/{id}/remove-group/{gid}": {
+            "put": {
+                "tags": [
+                    "Corporation"
+                ],
+                "summary": "Remove a group from the corporation.",
+                "description": "Needs role: group-admin",
+                "operationId": "removeGroup",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the corporation.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "gid",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Group removed."
+                    },
+                    "404": {
+                        "description": "Corporation and/or group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/corporation/tracked-corporations": {
+            "get": {
+                "tags": [
+                    "Corporation"
+                ],
+                "summary": "Returns all corporations that have member tracking data.",
+                "description": "Needs role: tracking",
+                "operationId": "trackedCorporations",
+                "responses": {
+                    "200": {
+                        "description": "List of characters.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Corporation"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/corporation/{id}/members": {
+            "get": {
+                "tags": [
+                    "Corporation"
+                ],
+                "summary": "Returns tracking data of corporation members.",
+                "description": "Needs role: tracking",
+                "operationId": "members",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the corporation.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "inactive",
+                        "in": "query",
+                        "description": "Limit to members who have been inactive for x days or longer.",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "active",
+                        "in": "query",
+                        "description": "Limit to members who were active in the last x days.",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of corporation members.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/CorporationMember"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/esi/request": {
+            "get": {
+                "tags": [
+                    "ESI"
+                ],
+                "summary": "ESI request.",
+                "description": "Needs role: user-admin\n     *                  Example route: /characters/{character_id}/stats/\n     *                  Only for GET request.\n     *                  Only the {character_id} placeholder is implemented.",
+                "operationId": "request",
+                "parameters": [
+                    {
+                        "name": "character",
+                        "in": "query",
+                        "description": "EVE character ID.",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "route",
+                        "in": "query",
+                        "description": "The ESI route.",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The result from ESI or an error message.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Error.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/all": {
+            "get": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "List all groups.",
+                "description": "Needs role: app-admin, group-admin or user-manager",
+                "operationId": "all",
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/public": {
+            "get": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "List all public groups.",
+                "description": "Needs role: user",
+                "operationId": "public",
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/create": {
+            "post": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Create a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "create",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "Name of the group.",
+                        "required": true,
+                        "type": "string",
+                        "maxLength": 64,
+                        "pattern": "^[-._a-zA-Z0-9]+$"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "The new group.",
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    },
+                    "400": {
+                        "description": "Group name is invalid."
+                    },
+                    "409": {
+                        "description": "A group with this name already exists."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/rename": {
+            "put": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Rename a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "rename",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "New name for the group.",
+                        "required": true,
+                        "type": "string",
+                        "maxLength": 64,
+                        "pattern": "^[-._a-zA-Z0-9]+$"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Group was renamed.",
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "400": {
+                        "description": "Group name is invalid."
+                    },
+                    "409": {
+                        "description": "A group with this name already exists."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/set-visibility/{choice}": {
+            "put": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Change visibility of a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "setVisibility",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "choice",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "private",
+                            "public",
+                            "conditioned"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Visibility changed.",
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid 'choice' parameter."
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/delete": {
+            "delete": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Delete a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Group was deleted."
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/managers": {
+            "get": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "List all managers of a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "managers",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Group ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of players ordered by name. Only id, name and roles properties are returned.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/corporations": {
+            "get": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "List all corporations of a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "corporations",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Group ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of corporations ordered by name.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Corporation"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/alliances": {
+            "get": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "List all alliances of a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "alliances",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Group ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of alliances ordered by name.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Alliance"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/required-groups": {
+            "get": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "List all required groups of a group.",
+                "description": "Needs role: group-admin, group-manager",
+                "operationId": "requiredGroups",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Group ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups ordered by name.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/add-required/{groupId}": {
+            "put": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Add required group to a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "addRequiredGroup",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "ID of the group to add.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Group added."
+                    },
+                    "404": {
+                        "description": "Group(s) not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/remove-required/{groupId}": {
+            "put": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Remove required group from a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "removeRequiredGroup",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "ID of the group to remove.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Group removed."
+                    },
+                    "404": {
+                        "description": "Group(s) not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/add-manager/{pid}": {
+            "put": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Assign a player as manager to a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "addManager",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "pid",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Player added as manager."
+                    },
+                    "404": {
+                        "description": "Player and/or group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/remove-manager/{pid}": {
+            "put": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Remove a manager (player) from a group.",
+                "description": "Needs role: group-admin",
+                "operationId": "removeManager",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "pid",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Player removed from managers."
+                    },
+                    "404": {
+                        "description": "Player and/or group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/applications": {
+            "get": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "List all applications of a group.",
+                "description": "Needs role: group-manager",
+                "operationId": "applications",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Group ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of group applications ordered by created date.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/GroupApplication"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/accept-application/{id}": {
+            "put": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Accept a player's request to join a group.",
+                "description": "Needs role: group-manager",
+                "operationId": "acceptApplication",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the application.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Application accepted."
+                    },
+                    "404": {
+                        "description": "Application not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/deny-application/{id}": {
+            "put": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Deny a player's request to join a group.",
+                "description": "Needs role: group-manager",
+                "operationId": "denyApplication",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the application.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Application denied."
+                    },
+                    "404": {
+                        "description": "Application not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/add-member/{pid}": {
+            "put": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Adds a player to a group.",
+                "description": "Needs role: group-manager or user-manager",
+                "operationId": "addMember",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "pid",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Player added."
+                    },
+                    "404": {
+                        "description": "Player and/or group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/remove-member/{pid}": {
+            "put": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Remove player from a group.",
+                "description": "Needs role: group-manager or user-manager",
+                "operationId": "removeMember",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "pid",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Player removed."
+                    },
+                    "404": {
+                        "description": "Player and/or group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/group/{id}/members": {
+            "get": {
+                "tags": [
+                    "Group"
+                ],
+                "summary": "List all members of a group.",
+                "description": "Needs role: group-manager",
+                "operationId": "members",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Group ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of players ordered by name. Only id and name properties are returned.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/show": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Return the logged in player with all properties.",
+                "description": "Needs role: user",
+                "operationId": "show",
+                "responses": {
+                    "200": {
+                        "description": "The player information.",
+                        "schema": {
+                            "$ref": "#/definitions/Player"
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/groups-disabled": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Check whether groups for this account are disabled or will be disabled soon.",
+                "description": "Needs role: user",
+                "operationId": "groupsDisabled",
+                "responses": {
+                    "200": {
+                        "description": "True if groups are disabled, otherwise false.",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/{id}/groups-disabled": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Check whether groups for this account are disabled or will be disabled soon.",
+                "description": "Needs role: user-admin",
+                "operationId": "groupsDisabledById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "True if groups are disabled, otherwise false.",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "404": {
+                        "description": "Player not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/add-application/{gid}": {
+            "put": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Submit a group application.",
+                "description": "Needs role: user",
+                "operationId": "addApplication",
+                "parameters": [
+                    {
+                        "name": "gid",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Application submitted."
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/remove-application/{gid}": {
+            "put": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Cancel a group application.",
+                "description": "Needs role: user",
+                "operationId": "removeApplication",
+                "parameters": [
+                    {
+                        "name": "gid",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Application canceled."
+                    },
+                    "404": {
+                        "description": "Application not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/show-applications": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Show all group applications.",
+                "description": "Needs role: user",
+                "operationId": "showApplications",
+                "responses": {
+                    "200": {
+                        "description": "The group applications.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/GroupApplication"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/leave-group/{gid}": {
+            "put": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Leave a group.",
+                "description": "Needs role: user",
+                "operationId": "leaveGroup",
+                "parameters": [
+                    {
+                        "name": "gid",
+                        "in": "path",
+                        "description": "ID of the group.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Group left."
+                    },
+                    "404": {
+                        "description": "Group not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/set-main/{cid}": {
+            "put": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Change the main character from the player account.",
+                "description": "Needs role: user",
+                "operationId": "setMain",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "Character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The main character.",
+                        "schema": {
+                            "$ref": "#/definitions/Character"
+                        }
+                    },
+                    "404": {
+                        "description": "Character not found on this account."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/{id}/set-status/{status}": {
+            "put": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Change the player's account status.",
+                "description": "Needs role: user-admin",
+                "operationId": "setStatus",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "status",
+                        "in": "path",
+                        "description": "The new status.",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "standard",
+                            "managed"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Status changed."
+                    },
+                    "400": {
+                        "description": "Invalid player or status."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/with-characters": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "List all players with characters.",
+                "description": "Needs role: user-admin",
+                "operationId": "withCharacters",
+                "responses": {
+                    "200": {
+                        "description": "List of players ordered by name. Only id and name properties are returned.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/without-characters": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "List all players without characters.",
+                "description": "Needs role: user-admin",
+                "operationId": "withoutCharacters",
+                "responses": {
+                    "200": {
+                        "description": "List of players ordered by name. Only id and name properties are returned.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/app-managers": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "List all players with the role app-manger.",
+                "description": "Needs role: app-admin",
+                "operationId": "appManagers",
+                "responses": {
+                    "200": {
+                        "description": "List of players ordered by name. Only id and name properties are returned.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/group-managers": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "List all players with the role group-manger.",
+                "description": "Needs role: group-admin",
+                "operationId": "groupManagers",
+                "responses": {
+                    "200": {
+                        "description": "List of players ordered by name. Only id and name properties are returned.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/with-role/{name}": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "List all players with a role.",
+                "description": "Needs role: user-admin",
+                "operationId": "withRole",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Role name.",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "app-admin",
+                            "app-manager",
+                            "group-admin",
+                            "group-manager",
+                            "user-admin",
+                            "user-manager",
+                            "esi",
+                            "settings",
+                            "tracking"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of players ordered by name. Only id and name properties are returned.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    },
+                    "400": {
+                        "description": "Invalid role name."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/with-status/{name}": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Lists all players with characters who have a certain status.",
+                "description": "Needs role: user-admin, user-manager",
+                "operationId": "withStatus",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Status name.",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "standard",
+                            "managed"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of players ordered by name. Only id and name properties are returned.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    },
+                    "400": {
+                        "description": "Invalid status name."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/{id}/add-role/{name}": {
+            "put": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Add a role to the player.",
+                "description": "Needs role: user-admin",
+                "operationId": "addRole",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Name of the role.",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "app-admin",
+                            "app-manager",
+                            "group-admin",
+                            "group-manager",
+                            "user-admin",
+                            "user-manager",
+                            "esi",
+                            "settings",
+                            "tracking"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Role added."
+                    },
+                    "404": {
+                        "description": "Player and/or role not found or invalid."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/{id}/remove-role/{name}": {
+            "put": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Remove a role from a player.",
+                "description": "Needs role: user-admin",
+                "operationId": "removeRole",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Name of the role.",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "app-admin",
+                            "app-manager",
+                            "group-admin",
+                            "group-manager",
+                            "user-admin",
+                            "user-manager",
+                            "esi",
+                            "settings",
+                            "tracking"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Role removed."
+                    },
+                    "404": {
+                        "description": "Player and/or role not found or invalid."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/{id}/show": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Show all data from a player.",
+                "description": "Needs role: user-admin, user-manager",
+                "operationId": "showById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The player information (this one includes the removedCharacters property).",
+                        "schema": {
+                            "$ref": "#/definitions/Player"
+                        }
+                    },
+                    "404": {
+                        "description": "Player not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/{id}/characters": {
+            "get": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Show player with characters.",
+                "description": "Needs role: app-admin, group-admin, user-manager, group-manager, tracking",
+                "operationId": "characters",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the player.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The player with id, name and characters properties only.",
+                        "schema": {
+                            "$ref": "#/definitions/Player"
+                        }
+                    },
+                    "404": {
+                        "description": "Player not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/player/delete-character/{id}": {
+            "delete": {
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Delete a character.",
+                "description": "Needs role: user, user-admin",
+                "operationId": "deleteCharacter",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the character.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "admin",
+                        "in": "query",
+                        "description": "Indicates that the deletion was triggered from the admin interface.",
+                        "type": "integer",
+                        "enum": [
+                            0,
+                            1
+                        ]
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Character was deleted."
+                    },
+                    "404": {
+                        "description": "Character not found."
+                    },
+                    "403": {
+                        "description": "Not authorized or feature disabled."
+                    },
+                    "409": {
+                        "description": "Trying to delete logged in character."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/settings/system/list": {
+            "get": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "List all settings.",
+                "description": "Some variables need the role 'settings'",
+                "operationId": "systemList",
+                "responses": {
+                    "200": {
+                        "description": "List of settings.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/SystemVariable"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/settings/system/change/{name}": {
+            "put": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Change a system settings variable.",
+                "description": "Needs role: settings",
+                "operationId": "systemChange",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Name of the variable.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "value",
+                        "in": "formData",
+                        "description": "New value for the variable.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Variable value changed.",
+                        "schema": {
+                            "$ref": "#/definitions/SystemVariable"
+                        }
+                    },
+                    "204": {
+                        "description": "Variable removed."
+                    },
+                    "404": {
+                        "description": "Variable not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/settings/system/send-account-disabled-mail": {
+            "post": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Sends a 'Account disabled' test mail to the logged-in character.",
+                "description": "Needs role: settings",
+                "operationId": "sendAccountDisabledMail",
+                "responses": {
+                    "200": {
+                        "description": "Error message, if available.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        },
+        "/user/settings/system/validate-director/{name}": {
+            "put": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Validates ESI token from a director and updates name and corporation.",
+                "description": "Needs role: settings",
+                "operationId": "validateDirector",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Name of the director variable.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "True if the access token is valid, otherwise false",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ]
+            }
+        }
+    },
+    "definitions": {
+        "CharacterGroups": {
+            "required": [
+                "character",
+                "groups"
+            ],
+            "properties": {
+                "character": {
+                    "$ref": "#/definitions/Character"
+                },
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                }
+            }
+        },
+        "LoginResult": {
+            "required": [
+                "success",
+                "message"
+            ],
+            "properties": {
+                "success": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "Alliance": {
+            "required": [
+                "id",
+                "name",
+                "ticker"
+            ],
+            "properties": {
+                "id": {
+                    "description": "EVE alliance ID.",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "description": "EVE alliance name.",
+                    "type": "string"
+                },
+                "ticker": {
+                    "description": "Alliance ticker.",
+                    "type": "string"
+                },
+                "groups": {
+                    "description": "Groups for automatic assignment (API: not included by default).",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                }
+            }
+        },
+        "App": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "description": "App ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "App name",
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "roles": {
+                    "description": "Roles for authorization.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Role"
+                    }
+                },
+                "groups": {
+                    "description": "Groups the app can see.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                }
+            }
+        },
+        "Character": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "description": "EVE character ID.",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "description": "EVE character name.",
+                    "type": "string"
+                },
+                "main": {
+                    "type": "boolean"
+                },
+                "validToken": {
+                    "description": "Shows if character's refresh token is valid or not.\n\nIf there is no refresh token this is null.",
+                    "type": "boolean"
+                },
+                "lastUpdate": {
+                    "description": "Last ESI update.",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "corporation": {
+                    "$ref": "#/definitions/Corporation"
+                }
+            }
+        },
+        "Corporation": {
+            "required": [
+                "id",
+                "name",
+                "ticker"
+            ],
+            "properties": {
+                "id": {
+                    "description": "EVE corporation ID.",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "description": "EVE corporation name.",
+                    "type": "string"
+                },
+                "ticker": {
+                    "description": "Corporation ticker.",
+                    "type": "string"
+                },
+                "alliance": {
+                    "$ref": "#/definitions/Alliance"
+                },
+                "groups": {
+                    "description": "Groups for automatic assignment (API: not included by default).",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                }
+            }
+        },
+        "CorporationMember": {
+            "description": "The player property contains only id and name, character does not contain corporation.",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "player": {
+                    "$ref": "#/definitions/Player"
+                },
+                "id": {
+                    "description": "EVE Character ID.",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "description": "EVE Character name.",
+                    "type": "string"
+                },
+                "locationId": {
+                    "description": "Corporation ticker.",
+                    "type": "integer"
+                },
+                "logoffDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "logonDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "shipTypeId": {
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "character": {
+                    "$ref": "#/definitions/Character"
+                }
+            }
+        },
+        "Group": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "description": "Group ID.",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "A unique group name (can be changed).",
+                    "type": "string",
+                    "maxLength": 64,
+                    "pattern": "^[-._a-zA-Z0-9]+$"
+                },
+                "visibility": {
+                    "type": "string",
+                    "enum": [
+                        "private",
+                        "public",
+                        "conditioned"
+                    ]
+                }
+            }
+        },
+        "GroupApplication": {
+            "description": "The player property contains only id and name.",
+            "required": [
+                "id",
+                "player",
+                "group",
+                "created"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "player": {
+                    "$ref": "#/definitions/Player"
+                },
+                "group": {
+                    "$ref": "#/definitions/Group"
+                },
+                "created": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "status": {
+                    "description": "Group application status.",
+                    "type": "string",
+                    "enum": [
+                        "pending",
+                        "accepted",
+                        "denied"
+                    ]
+                }
+            }
+        },
+        "Player": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "A name for the player.\n\nThis is the EVE character name of the current main character or of\nthe last main character if there is currently none.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Player account status.",
+                    "type": "string",
+                    "enum": [
+                        "standard",
+                        "managed"
+                    ]
+                },
+                "roles": {
+                    "description": "Roles for authorization.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Role"
+                    }
+                },
+                "characters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Character"
+                    }
+                },
+                "groups": {
+                    "description": "Group membership.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                },
+                "managerGroups": {
+                    "description": "Manager of groups.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                },
+                "managerApps": {
+                    "description": "Manager of apps.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/App"
+                    }
+                },
+                "removedCharacters": {
+                    "description": "Characters that were removed from a player (API: not included by default).",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RemovedCharacter"
+                    }
+                }
+            }
+        },
+        "RemovedCharacter": {
+            "required": [
+                "characterId",
+                "characterName",
+                "removedDate",
+                "reason"
+            ],
+            "properties": {
+                "newPlayerId": {
+                    "type": "integer"
+                },
+                "newPlayerName": {
+                    "type": "string"
+                },
+                "characterId": {
+                    "description": "EVE character ID.",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "characterName": {
+                    "description": "EVE character name.",
+                    "type": "string"
+                },
+                "removedDate": {
+                    "description": "Date of removal.",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "reason": {
+                    "description": "How it was removed (deleted or moved to another account).",
+                    "enum": [
+                        "moved",
+                        "deleted-manually",
+                        "deleted-biomassed",
+                        "deleted-owner-changed"
+                    ]
+                }
+            }
+        },
+        "Role": {
+            "type": "string",
+            "enum": [
+                "app",
+                "app-groups",
+                "app-chars",
+                "app-tracking",
+                "app-esi",
+                "user",
+                "user-admin",
+                "user-manager",
+                "app-admin",
+                "app-manager",
+                "group-admin",
+                "group-manager",
+                "esi",
+                "settings",
+                "tracking"
+            ]
+        },
+        "SystemVariable": {
+            "required": [
+                "name",
+                "value"
+            ],
+            "properties": {
+                "name": {
+                    "description": "Variable name.",
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "value": {
+                    "description": "Variable value.",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "description": "Example: Bearer ABC",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "Session": {
+            "type": "apiKey",
+            "description": "Example: BCSESS=123",
+            "name": "Cookie",
+            "in": "header"
+        }
+    },
+    "tags": [
+        {
+            "name": "Application",
+            "description": "API for applications."
+        },
+        {
+            "name": "Alliance",
+            "description": "Alliance management (for automatic group assignment)."
+        },
+        {
+            "name": "App",
+            "description": "Application management."
+        },
+        {
+            "name": "Auth",
+            "description": "User authentication."
+        },
+        {
+            "name": "Character",
+            "description": "Character related functions."
+        },
+        {
+            "name": "Corporation",
+            "description": "Corporation management (for automatic group assignment) and tracking."
+        },
+        {
+            "name": "ESI",
+            "description": "ESI requests"
+        },
+        {
+            "name": "Group",
+            "description": "Group management."
+        },
+        {
+            "name": "Player",
+            "description": "Player management."
+        },
+        {
+            "name": "Settings",
+            "description": "System settings."
+        }
+    ]
+}

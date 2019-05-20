@@ -11,13 +11,13 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\Random;
 use Neucore\Service\UserAuth;
+use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="App",
  *     description="Application management."
  * )
@@ -74,19 +74,19 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/app/all",
      *     operationId="all",
      *     summary="List all apps.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of apps (only id and name properties are returned).",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/App"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/App"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
